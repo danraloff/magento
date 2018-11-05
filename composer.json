@@ -3,7 +3,7 @@
     "description": "GetResponse Integration for Magento2",
     "version": "20.3.4",
     "license": "OSL-3.0",
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "type": "magento2-module",
     "repositories": [
         {
