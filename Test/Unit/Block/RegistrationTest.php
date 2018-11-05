@@ -62,7 +62,6 @@ class RegistrationTest extends BaseTestCase
         $getresponseBlock = new Getresponse($this->repository, $this->repositoryFactory);
         $this->registrationBlock = new RegistrationBlock(
             $this->context,
-            $this->repository,
             $this->repositoryFactory,
             $getresponseBlock,
             $this->customFieldsService,
