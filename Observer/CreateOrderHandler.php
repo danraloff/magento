@@ -83,13 +83,13 @@ class CreateOrderHandler extends Ecommerce implements ObserverInterface
     {
         try {
 
-            if (!$this->canHandleECommerceEvent()) {
-                return;
-            }
-
             $shopId = $this->scopeConfig->getValue(Config::CONFIG_DATA_SHOP_ID);
 
             if (empty($shopId)) {
+                return;
+            }
+
+            if (!$this->canHandleECommerceEvent()) {
                 return;
             }
 
@@ -97,7 +97,6 @@ class CreateOrderHandler extends Ecommerce implements ObserverInterface
             $order = $this->orderFactory->load(
                 $observer->getEvent()->getOrderIds()[0]
             );
-
 
             $this->orderService->sendOrder(
                 $this->addOrderCommandFactory->createForOrderService(

@@ -3,15 +3,15 @@ namespace GetResponse\GetResponseIntegration\Block;
 
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\RegistrationSettings;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GrShareCode\ContactList\ContactListCollection;
 use GrShareCode\ContactList\ContactListService;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Shop\ShopsCollection;
 use GrShareCode\Shop\ShopService;
-use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 
 /**
  * Class Ecommerce
@@ -82,7 +82,7 @@ class Ecommerce extends Template
     }
 
     /**
-     * @return RegistrationSettings
+     * @return SubscribeViaRegistration
      */
     public function getRegistrationSettings()
     {

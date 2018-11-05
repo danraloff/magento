@@ -70,13 +70,13 @@ class CreateCartHandler extends Ecommerce implements ObserverInterface
     {
         try {
 
-            if (!$this->canHandleECommerceEvent()) {
-                return $this;
-            }
-
             $shopId = $this->scopeConfig->getValue(Config::CONFIG_DATA_SHOP_ID);
 
             if (empty($shopId)) {
+                return $this;
+            }
+
+            if (!$this->canHandleECommerceEvent()) {
                 return $this;
             }
 

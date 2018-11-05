@@ -1,5 +1,5 @@
 <?php
-namespace Domain\GetResponse\Order;
+namespace GetResponse\GetResponseIntegration\Test\Unit\Domain\GetResponse\Order;
 
 use GetResponse\GetResponseIntegration\Test\Unit\Generator;
 use GrShareCode\Order\Order as GrOrder;

@@ -4,14 +4,13 @@ namespace GetResponse\GetResponseIntegration\Block;
 
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Account as GrAccount;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\AccountFactory;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsCollection;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsCollectionFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistrationFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettings;
 use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettingsFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\RegistrationSettings;
-use GetResponse\GetResponseIntegration\Domain\Magento\RegistrationSettingsFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GrShareCode\ContactList\Autoresponder;
 use GrShareCode\ContactList\ContactListService;
@@ -83,11 +82,11 @@ class Getresponse
     }
 
     /**
-     * @return RegistrationSettings
+     * @return SubscribeViaRegistration
      */
     public function getRegistrationSettings()
     {
-        return RegistrationSettingsFactory::createFromArray(
+        return SubscribeViaRegistrationFactory::createFromArray(
             $this->repository->getRegistrationSettings()
         );
     }
@@ -103,11 +102,13 @@ class Getresponse
     }
 
     /**
-     * @return CustomFieldsCollection
+     * @return CustomFieldsMappingCollection
      */
-    public function getCustoms()
+    public function getCustomFieldsMappingForRegistration()
     {
-        return CustomFieldsCollectionFactory::createFromRepository($this->repository->getCustoms());
+        return CustomFieldsMappingCollection::createFromRepository(
+            $this->repository->getCustomFieldsMappingForRegistration()
+        );
     }
 
     /**

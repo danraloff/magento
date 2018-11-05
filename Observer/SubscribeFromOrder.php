@@ -2,18 +2,18 @@
 
 namespace GetResponse\GetResponseIntegration\Observer;
 
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactCustomFields;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactService;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistrationFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistrationService;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
-use GetResponse\GetResponseIntegration\Domain\Magento\RegistrationSettingsFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GrShareCode\Api\ApiTypeException;
-use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\GetresponseApiException;
-use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer as EventObserver;
+use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\ObjectManagerInterface;
 
 /**
@@ -34,22 +34,34 @@ class SubscribeFromOrder implements ObserverInterface
     /** @var ContactService */
     private $contactService;
 
+    /** @var ContactCustomFields */
+    private $contactCustomFields;
+
+    /** @var SubscribeViaRegistrationService */
+    private $subscribeViaRegistrationService;
+
     /**
      * @param ObjectManagerInterface $objectManager
      * @param RepositoryFactory $repositoryFactory
      * @param Repository $repository
      * @param ContactService $contactService
+     * @param SubscribeViaRegistrationService $subscribeViaRegistrationService
+     * @param ContactCustomFields $contactCustomFields
      */
     public function __construct(
         ObjectManagerInterface $objectManager,
         RepositoryFactory $repositoryFactory,
         Repository $repository,
-        ContactService $contactService
+        ContactService $contactService,
+        SubscribeViaRegistrationService $subscribeViaRegistrationService,
+        ContactCustomFields $contactCustomFields
     ) {
         $this->_objectManager = $objectManager;
         $this->repositoryFactory = $repositoryFactory;
         $this->repository = $repository;
         $this->contactService = $contactService;
+        $this->contactCustomFields = $contactCustomFields;
+        $this->subscribeViaRegistrationService = $subscribeViaRegistrationService;
     }
 
     /**
@@ -58,7 +70,7 @@ class SubscribeFromOrder implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
-        $registrationSettings = RegistrationSettingsFactory::createFromArray(
+        $registrationSettings = SubscribeViaRegistrationFactory::createFromArray(
             $this->repository->getRegistrationSettings()
         );
 
@@ -68,8 +80,6 @@ class SubscribeFromOrder implements ObserverInterface
 
         $orderIds = $observer->getOrderIds();
         $orderId = (int)(is_array($orderIds) ? array_pop($orderIds) : $orderIds);
-
-        $customFields = $this->prepareCustomFields($orderId);
 
         if ($orderId < 1) {
             return $this;
@@ -83,13 +93,19 @@ class SubscribeFromOrder implements ObserverInterface
             return $this;
         }
 
+        $contactCustomFieldsCollection = $this->contactCustomFields->getFromCustomer(
+            $customer,
+            $this->subscribeViaRegistrationService->getCustomFieldMappingSettings(),
+            $registrationSettings->isUpdateCustomFieldsEnalbed()
+        );
+
         $this->addContact(
             $registrationSettings->getCampaignId(),
             $customer->getFirstname(),
             $customer->getLastname(),
             $customer->getEmail(),
             $registrationSettings->getCycleDay(),
-            $customFields
+            $contactCustomFieldsCollection
         );
 
         return $this;
@@ -102,69 +118,29 @@ class SubscribeFromOrder implements ObserverInterface
      * @param string $lastName
      * @param string $email
      * @param null|int $cycleDay
-     * @param array $user_customs
+     * @param ContactCustomFieldsCollection $contactCustomFieldsCollection
      */
-    public function addContact($campaign, $firstName, $lastName, $email, $cycleDay = null, $user_customs = [])
-    {
+    public function addContact(
+        $campaign,
+        $firstName,
+        $lastName,
+        $email,
+        $cycleDay = null,
+        ContactCustomFieldsCollection $contactCustomFieldsCollection
+    ) {
         try {
-            $grApiClient = $this->repositoryFactory->createGetResponseApiClient();
-            $customFields = new ContactCustomFieldsCollection();
-
-            foreach ($user_customs as $name => $value) {
-                $custom = $grApiClient->getCustomFieldByName($name);
-
-                if (!empty($custom)) {
-                    $customFields->add(new ContactCustomField($custom['customFieldId'], $value));
-                }
-            }
-
             $this->contactService->createContact(
                 $email,
                 $firstName,
                 $lastName,
                 $campaign,
                 $cycleDay,
-                $customFields
+                $contactCustomFieldsCollection
             );
-
-        } catch (RepositoryException $e) {
         } catch (ApiTypeException $e) {
         } catch (GetresponseApiException $e) {
         } catch (ConnectionSettingsException $e) {
         }
     }
 
-    /**
-     * @param int $orderId
-     * @return array
-     */
-    private function prepareCustomFields($orderId)
-    {
-        $customFields = [];
-        $customs = $this->repository->getCustoms();
-
-        $order = $this->repository->loadOrder($orderId);
-        $customer = $this->repository->loadCustomer($order->getCustomerId());
-        $address = $this->repository->loadCustomerAddress($customer->getDefaultBilling());
-        $data = array_merge($address->getData(), $customer->getData());
-
-        foreach ($customs as $custom) {
-            if ($custom->isDefault) {
-                continue;
-            }
-
-            if ($custom->customField == 'birthday') {
-                $custom->customField = 'dob';
-            }
-            if ($custom->customField == 'country') {
-                $custom->customField = 'country_id';
-            }
-
-            if (!empty($data[$custom->customField])) {
-                $customFields[$custom->customName] = $data[$custom->customField];
-            }
-        }
-
-        return $customFields;
-    }
 }

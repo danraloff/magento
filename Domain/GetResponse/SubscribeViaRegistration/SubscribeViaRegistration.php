@@ -1,11 +1,11 @@
 <?php
-namespace GetResponse\GetResponseIntegration\Domain\Magento;
+namespace GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration;
 
 /**
- * Class RegistrationSettings
- * @package GetResponse\GetResponseIntegration\Domain\Magento
+ * Class SubscribeViaRegistration
+ * @package GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration
  */
-class RegistrationSettings
+class SubscribeViaRegistration
 {
     /** @var int */
     private $status;
@@ -57,7 +57,7 @@ class RegistrationSettings
     /**
      * @return bool
      */
-    public function isCustomFieldsModified()
+    public function isUpdateCustomFieldsEnalbed()
     {
         return 1 === (int)$this->customFieldsStatus;
     }

@@ -2,19 +2,23 @@
 
 namespace GetResponse\GetResponseIntegration\Block;
 
-use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsCollection;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomField\CustomFieldService;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingService;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\MagentoCustomerAttribute\MagentoCustomerAttributeCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\RegistrationSettings;
-use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
+use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
+use GrShareCode\Api\ApiTypeException;
 use GrShareCode\ContactList\ContactListCollection;
 use GrShareCode\ContactList\ContactListService;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Shop\ShopsCollection;
 use GrShareCode\Shop\ShopService;
-use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 
 /**
  * Class Export
@@ -22,35 +26,41 @@ use Magento\Framework\View\Element\Template;
  */
 class Export extends Template
 {
-    /** @var Repository */
-    private $repository;
-
     /** @var GetresponseApiClient */
     private $repositoryFactory;
 
     /** @var Getresponse */
     private $getResponseBlock;
 
+    /** @var CustomFieldService */
+    private $customFieldService;
+
+    /** @var CustomFieldsMappingService */
+    private $customFieldsMappingService;
+
     /**
      * @param Context $context
-     * @param Repository $repository
      * @param RepositoryFactory $repositoryFactory
      * @param Getresponse $getResponseBlock
+     * @param CustomFieldService $customFieldService
+     * @param CustomFieldsMappingService $customFieldsMappingService
      */
     public function __construct(
         Context $context,
-        Repository $repository,
         RepositoryFactory $repositoryFactory,
-        Getresponse $getResponseBlock
+        Getresponse $getResponseBlock,
+        CustomFieldService $customFieldService,
+        CustomFieldsMappingService $customFieldsMappingService
     ) {
         parent::__construct($context);
-        $this->repository = $repository;
         $this->repositoryFactory = $repositoryFactory;
         $this->getResponseBlock = $getResponseBlock;
+        $this->customFieldService = $customFieldService;
+        $this->customFieldsMappingService = $customFieldsMappingService;
     }
 
     /**
-     * @return RegistrationSettings
+     * @return SubscribeViaRegistration
      */
     public function getExportSettings()
     {
@@ -58,19 +68,11 @@ class Export extends Template
     }
 
     /**
-     * @return mixed
+     * @return CustomFieldsMappingCollection
      */
-    public function getCustomers()
+    public function getCustomFieldsMapping()
     {
-        return $this->repository->getCustomers();
-    }
-
-    /**
-     * @return CustomFieldsCollection
-     */
-    public function getCustoms()
-    {
-        return $this->getResponseBlock->getCustoms();
+        return $this->getResponseBlock->getCustomFieldsMappingForRegistration();
     }
 
     /**
@@ -100,4 +102,33 @@ class Export extends Template
     {
         return $this->getResponseBlock->getAutoRespondersForFrontend();
     }
+
+    /**
+     * @return array
+     * @throws GetresponseApiException
+     * @throws ConnectionSettingsException
+     * @throws ApiTypeException
+     */
+    public function getCustomFieldsFromGetResponse()
+    {
+        $result = [];
+
+        foreach ($this->customFieldService->getCustomFields() as $customField) {
+            $result[] = [
+                'id' => $customField->getId(),
+                'name' => $customField->getName(),
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return MagentoCustomerAttributeCollection
+     */
+    public function getMagentoCustomerAttributes()
+    {
+        return $this->customFieldsMappingService->getMagentoCustomerAttributes();
+    }
+
 }

@@ -4,7 +4,7 @@ namespace GetResponse\GetResponseIntegration\Test\Unit\Block;
 use GetResponse\GetResponseIntegration\Block\Ecommerce as EcommerceBlock;
 use GetResponse\GetResponseIntegration\Block\Getresponse;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\RegistrationSettings;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Test\BaseTestCase;
 use Magento\Framework\ObjectManagerInterface;
@@ -46,16 +46,16 @@ class EcommerceTest extends BaseTestCase
      * @test
      *
      * @param array $dbResponse
-     * @param RegistrationSettings $expectedSettings
+     * @param \GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration $expectedSettings
      * @dataProvider shouldReturnValidRegistrationSettingsProvider
      */
-    public function shouldReturnValidRegistrationSettings(array $dbResponse, RegistrationSettings $expectedSettings)
+    public function shouldReturnValidRegistrationSettings(array $dbResponse, SubscribeViaRegistration $expectedSettings)
     {
         $this->repository->expects($this->once())->method('getRegistrationSettings')->willReturn($dbResponse);
         $settings = $this->accountBlock->getRegistrationSettings();
 
         $this->assertEquals($expectedSettings->isEnabled(), $settings->isEnabled());
-        $this->assertEquals($expectedSettings->isCustomFieldsModified(), $settings->isCustomFieldsModified());
+        $this->assertEquals($expectedSettings->isUpdateCustomFieldsEnalbed(), $settings->isUpdateCustomFieldsEnalbed());
         $this->assertEquals($expectedSettings->getCampaignId(), $settings->getCampaignId());
         $this->assertEquals($expectedSettings->getCycleDay(), $settings->getCycleDay());
     }
@@ -66,7 +66,7 @@ class EcommerceTest extends BaseTestCase
     public function shouldReturnValidRegistrationSettingsProvider()
     {
         return [
-            [[], new RegistrationSettings(0, 0, '', 0, 'x3')],
+            [[], new SubscribeViaRegistration(0, 0, '', 0, 'x3')],
             [
                 [
                     'status' => '1',
@@ -74,7 +74,7 @@ class EcommerceTest extends BaseTestCase
                     'campaignId' => 9,
                     'cycleDay' => 2,
                     'autoresponderId' => 'x3'
-                ], new RegistrationSettings(1, 1, '9', 2, 'x3')
+                ], new SubscribeViaRegistration(1, 1, '9', 2, 'x3')
             ]
         ];
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\GetResponse\Order;
+namespace GetResponse\GetResponseIntegration\Test\Unit\Domain\GetResponse\Order;
 
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Order\AddOrderCommandFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Order\Address\AddressFactory;

@@ -1,6 +1,7 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Controller\Adminhtml\Account;
 
+use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingService;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
 use GetResponse\GetResponseIntegration\Domain\Magento\WebEventTrackingSettingsFactory;
 use GetResponse\GetResponseIntegration\Helper\Message;
@@ -11,13 +12,11 @@ use GrShareCode\TrackingCode\TrackingCodeService;
 use Magento\Backend\App\Action;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\DefaultCustomFieldsFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryValidator;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
 use GetResponse\GetResponseIntegration\Helper\Config;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\View\Result\Page;
-use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\App\Request\Http;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 
@@ -32,9 +31,6 @@ class Save extends Action
     const API_ERROR_MESSAGE = 'The API key seems incorrect. Please check if you typed or pasted it correctly. If you recently generated a new key, please make sure you’re using the right one';
     const API_EMPTY_VALUE_MESSAGE = 'You need to enter API key. This field can\'t be empty';
 
-    /** @var PageFactory */
-    private $resultPageFactory;
-
     /** @var Http */
     private $request;
 
@@ -44,30 +40,27 @@ class Save extends Action
     /** @var RepositoryFactory */
     private $repositoryFactory;
 
-    /** @var RepositoryValidator */
-    private $repositoryValidator;
+    /** @var CustomFieldsMappingService */
+    private $customFieldsMappingService;
 
     /**
      * @param Context $context
-     * @param PageFactory $resultPageFactory
      * @param RepositoryFactory $repositoryFactory
      * @param Repository $repository
-     * @param RepositoryValidator $repositoryValidator
+     * @param CustomFieldsMappingService $customFieldsMappingService
      */
     public function __construct(
         Context $context,
-        PageFactory $resultPageFactory,
         RepositoryFactory $repositoryFactory,
         Repository $repository,
-        RepositoryValidator $repositoryValidator
+        CustomFieldsMappingService $customFieldsMappingService
     ) {
         parent::__construct($context);
 
-        $this->resultPageFactory = $resultPageFactory;
         $this->request = $this->getRequest();
         $this->repository = $repository;
         $this->repositoryFactory = $repositoryFactory;
-        $this->repositoryValidator = $repositoryValidator;
+        $this->customFieldsMappingService = $customFieldsMappingService;
     }
 
 
@@ -91,7 +84,6 @@ class Save extends Action
             $account = $accountService->getAccount();
 
             $trackingCodeService = new TrackingCodeService($grApiClient);
-
             $trackingCode = $trackingCodeService->getTrackingCode();
 
             $this->repository->saveConnectionSettings($connectionSettings);
@@ -104,7 +96,9 @@ class Save extends Action
                 ])
             );
             $this->repository->saveAccountDetails($account);
-            $this->repository->setCustomsOnInit(DefaultCustomFieldsFactory::createDefaultCustomsMap());
+
+            $this->customFieldsMappingService->setDefaultCustomFields();
+
             $this->messageManager->addSuccessMessage(Message::ACCOUNT_CONNECTED);
 
             return $this->_redirect(self::BACK_URL);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\GetResponse\Order;
+namespace GetResponse\GetResponseIntegration\Test\Unit\Domain\GetResponse\Order;
 
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Order\OrderService;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Order\OrderServiceFactory;
