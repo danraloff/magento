@@ -34,7 +34,7 @@ class CustomFieldService
     {
         $grCustomFieldService = $this->customFieldServiceFactory->create();
 
-        return $grCustomFieldService->getAllCustomFields(new TextFieldCustomFieldFilter());
+        return $grCustomFieldService->getCustomFieldsForMapping();
     }
 
 }
