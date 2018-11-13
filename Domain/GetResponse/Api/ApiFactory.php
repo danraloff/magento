@@ -1,21 +1,19 @@
 <?php
+namespace GetResponse\GetResponseIntegration\Domain\GetResponse\Api;
 
-namespace GetResponse\GetResponseIntegration\Domain\GetResponse\CustomField;
-
-use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiTypeFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
 use GrShareCode\Api\Authorization\ApiTypeException;
-use GrShareCode\CustomField\CustomFieldService as GrCustomFieldService;
+use GrShareCode\Api\GetresponseApiClient;
 
 /**
- * Class CustomFieldServiceFactory
- * @package GetResponse\GetResponseIntegration\Domain\GetResponse\Contact
+ * Class ApiFactory
+ * @package GetResponse\GetResponseIntegration\Domain\GetResponse\Api
  */
-class CustomFieldServiceFactory
+class ApiFactory
 {
     /** @var Repository */
     private $magentoRepository;
@@ -34,22 +32,20 @@ class CustomFieldServiceFactory
     }
 
     /**
-     * @return GrCustomFieldService
+     * @return GetresponseApiClient
      * @throws ApiTypeException
      * @throws ConnectionSettingsException
      */
     public function create()
     {
         $settings = ConnectionSettingsFactory::createFromArray($this->magentoRepository->getConnectionSettings());
-        $getResponseApi = GetresponseApiClientFactory::createFromParams(
+
+        return GetresponseApiClientFactory::createFromParams(
             $settings->getApiKey(),
             ApiTypeFactory::createFromConnectionSettings($settings),
             $settings->getDomain(),
             $this->shareCodeRepository,
             $this->magentoRepository->getGetResponsePluginVersion()
         );
-
-        return new GrCustomFieldService($getResponseApi);
     }
-
 }

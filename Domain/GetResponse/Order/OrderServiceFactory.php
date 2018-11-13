@@ -10,6 +10,7 @@ use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
 use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Order\OrderPayloadFactory;
 use GrShareCode\Order\OrderService as GrOrderService;
 
 /**
@@ -51,7 +52,13 @@ class OrderServiceFactory
         );
 
         $productService = new ProductServiceFactory($getResponseApi, $this->sharedCodeRepository);
-        return new GrOrderService($getResponseApi, $this->sharedCodeRepository, $productService->create());
+
+        return new GrOrderService(
+            $getResponseApi,
+            $this->sharedCodeRepository,
+            $productService->create(),
+            new OrderPayloadFactory()
+        );
     }
 
 }

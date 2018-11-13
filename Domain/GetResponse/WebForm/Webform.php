@@ -1,9 +1,9 @@
 <?php
-namespace GetResponse\GetResponseIntegration\Domain\GetResponse;
+namespace GetResponse\GetResponseIntegration\Domain\GetResponse\WebForm;
 
 /**
  * Class Webform
- * @package GetResponse\GetResponseIntegration\Domain\GetResponse
+ * @package GetResponse\GetResponseIntegration\Domain\GetResponse\WebForm
  */
 class Webform
 {

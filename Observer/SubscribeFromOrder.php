@@ -4,14 +4,13 @@ namespace GetResponse\GetResponseIntegration\Observer;
 
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactCustomFields;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactService;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistrationFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistrationService;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GrShareCode\Api\ApiTypeException;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Authorization\ApiTypeException;
+use GrShareCode\Api\Exception\GetresponseApiException;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\ObjectManagerInterface;
@@ -24,9 +23,6 @@ class SubscribeFromOrder implements ObserverInterface
 {
     /** @var ObjectManagerInterface */
     protected $_objectManager;
-
-    /** @var RepositoryFactory */
-    private $repositoryFactory;
 
     /** @var Repository */
     private $repository;
@@ -42,7 +38,6 @@ class SubscribeFromOrder implements ObserverInterface
 
     /**
      * @param ObjectManagerInterface $objectManager
-     * @param RepositoryFactory $repositoryFactory
      * @param Repository $repository
      * @param ContactService $contactService
      * @param SubscribeViaRegistrationService $subscribeViaRegistrationService
@@ -50,14 +45,12 @@ class SubscribeFromOrder implements ObserverInterface
      */
     public function __construct(
         ObjectManagerInterface $objectManager,
-        RepositoryFactory $repositoryFactory,
         Repository $repository,
         ContactService $contactService,
         SubscribeViaRegistrationService $subscribeViaRegistrationService,
         ContactCustomFields $contactCustomFields
     ) {
         $this->_objectManager = $objectManager;
-        $this->repositoryFactory = $repositoryFactory;
         $this->repository = $repository;
         $this->contactService = $contactService;
         $this->contactCustomFields = $contactCustomFields;
@@ -105,7 +98,8 @@ class SubscribeFromOrder implements ObserverInterface
             $customer->getLastname(),
             $customer->getEmail(),
             $registrationSettings->getCycleDay(),
-            $contactCustomFieldsCollection
+            $contactCustomFieldsCollection,
+            $registrationSettings->isUpdateCustomFieldsEnalbed()
         );
 
         return $this;
@@ -113,29 +107,32 @@ class SubscribeFromOrder implements ObserverInterface
 
 
     /**
-     * @param string $campaign
+     * @param string $contactListId
      * @param string $firstName
      * @param string $lastName
      * @param string $email
-     * @param null|int $cycleDay
+     * @param null|int $dayOfCycle
      * @param ContactCustomFieldsCollection $contactCustomFieldsCollection
+     * @param bool $updateIfAlreadyExists
      */
-    public function addContact(
-        $campaign,
+    private function addContact(
+        $contactListId,
         $firstName,
         $lastName,
         $email,
-        $cycleDay = null,
-        ContactCustomFieldsCollection $contactCustomFieldsCollection
+        $dayOfCycle,
+        ContactCustomFieldsCollection $contactCustomFieldsCollection,
+        $updateIfAlreadyExists
     ) {
         try {
-            $this->contactService->createContact(
+            $this->contactService->addContact(
                 $email,
                 $firstName,
                 $lastName,
-                $campaign,
-                $cycleDay,
-                $contactCustomFieldsCollection
+                $contactListId,
+                $dayOfCycle,
+                $contactCustomFieldsCollection,
+                $updateIfAlreadyExists
             );
         } catch (ApiTypeException $e) {
         } catch (GetresponseApiException $e) {

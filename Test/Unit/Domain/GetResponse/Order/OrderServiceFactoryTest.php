@@ -7,11 +7,12 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\Order\OrderServiceFact
 use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
 use GetResponse\GetResponseIntegration\Test\BaseTestCase;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GrShareCode\Api\ApiKeyAuthorization;
-use GrShareCode\Api\Authorization;
+use GrShareCode\Api\Authorization\ApiKeyAuthorization;
+use GrShareCode\Api\Authorization\Authorization;
+use GrShareCode\Api\GetresponseApi;
+use GrShareCode\Api\GetresponseApiClient;
 use GrShareCode\Api\UserAgentHeader;
-use GrShareCode\GetresponseApi;
-use GrShareCode\GetresponseApiClient;
+use GrShareCode\Order\OrderPayloadFactory;
 use GrShareCode\Order\OrderService;
 use GrShareCode\Product\ProductService;
 
@@ -71,7 +72,8 @@ class OrderServiceFactoryTest extends BaseTestCase
             new ProductService(
                 $getresponseApiClient,
                 $this->sharedCodeRepositoryMock
-            )
+            ),
+            new OrderPayloadFactory()
         );
 
         $this->magentoRepositoryMock->expects($this->once())->method('getConnectionSettings')->willReturn($rawSettings);

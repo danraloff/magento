@@ -6,11 +6,10 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
 use GetResponse\GetResponseIntegration\Domain\Magento\WebEventTrackingSettingsFactory;
 use GetResponse\GetResponseIntegration\Helper\Message;
 use GrShareCode\Account\AccountService;
-use GrShareCode\Api\ApiTypeException;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Authorization\ApiTypeException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\TrackingCode\TrackingCodeService;
 use Magento\Backend\App\Action;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\DefaultCustomFieldsFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
 use GetResponse\GetResponseIntegration\Helper\Config;
@@ -62,7 +61,6 @@ class Save extends Action
         $this->repositoryFactory = $repositoryFactory;
         $this->customFieldsMappingService = $customFieldsMappingService;
     }
-
 
     /**
      * @return ResponseInterface|Page

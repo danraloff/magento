@@ -9,10 +9,9 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
-use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\ContactList\ContactListCollection;
 use GrShareCode\ContactList\ContactListService;
-use GrShareCode\GetresponseApiException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 
@@ -101,7 +100,6 @@ class Registration extends Template
      * @return array
      * @throws GetresponseApiException
      * @throws ConnectionSettingsException
-     * @throws ApiTypeException
      */
     public function getCustomFieldsFromGetResponse()
     {

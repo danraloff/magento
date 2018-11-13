@@ -9,7 +9,7 @@ use GetResponse\GetResponseIntegration\Helper\Message;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryValidator;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GrShareCode\ContactList\AddContactListCommand;
+use GrShareCode\ContactList\Command\AddContactListCommand;
 use GrShareCode\ContactList\ContactListService;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Backend\App\Action\Context;

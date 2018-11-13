@@ -1,5 +1,5 @@
 <?php
-namespace GetResponse\GetResponseIntegration\Domain\GetResponse;
+namespace GetResponse\GetResponseIntegration\Domain\GetResponse\WebForm;
 
 /**
  * Class WebformCollectionFactory

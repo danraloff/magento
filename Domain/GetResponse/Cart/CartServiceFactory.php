@@ -5,12 +5,12 @@ namespace GetResponse\GetResponseIntegration\Domain\GetResponse\Cart;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiTypeFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Product\ProductServiceFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeCache;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
+use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeCache;
 use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
-use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Cart\CartService as GrCartService;
 
 /**
@@ -45,8 +45,8 @@ class CartServiceFactory
 
     /**
      * @return GrCartService
-     * @throws ApiTypeException
      * @throws ConnectionSettingsException
+     * @throws ApiTypeException
      */
     public function create()
     {
@@ -60,6 +60,7 @@ class CartServiceFactory
         );
 
         $productService = new ProductServiceFactory($getResponseApiClient, $this->shareCodeRepository);
+
         return new GrCartService(
             $getResponseApiClient,
             $this->shareCodeRepository,

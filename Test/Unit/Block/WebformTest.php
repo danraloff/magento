@@ -5,7 +5,7 @@ use GetResponse\GetResponseIntegration\Block\Webform as WebformBlock;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Test\BaseTestCase;
-use GrShareCode\GetresponseApiClient;
+use GrShareCode\Api\GetresponseApiClient;
 use GrShareCode\WebForm\WebForm;
 use GrShareCode\WebForm\WebFormCollection;
 use Magento\Framework\ObjectManagerInterface;
@@ -99,8 +99,8 @@ class WebformTest extends BaseTestCase
         ];
 
         $collection = new WebformCollection();
-        $collection->add(new Webform($secondFormId, $secondFormName, $secondFormScriptUrl, $secondFormCampaignName, Webform::STATUS_DISABLED));
-        $collection->add(new Webform($firstFormId, $firstFormName, $firstFormScriptUrl, $firstFormCampaignName, Webform::STATUS_ENABLED));
+        $collection->add(new Webform($secondFormId, $secondFormName, $secondFormScriptUrl, $secondFormCampaignName, Webform::STATUS_DISABLED, Webform::VERSION_V1));
+        $collection->add(new Webform($firstFormId, $firstFormName, $firstFormScriptUrl, $firstFormCampaignName, Webform::STATUS_ENABLED, Webform::VERSION_V2));
 
         return [
             [[], [], new WebformCollection()],

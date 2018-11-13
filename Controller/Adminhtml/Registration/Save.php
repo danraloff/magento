@@ -57,10 +57,10 @@ class Save extends AbstractController
     ) {
         parent::__construct($context, $repositoryValidator);
         $this->resultPageFactory = $resultPageFactory;
-        $this->request = $this->getRequest();
         $this->repository = $repository;
         $this->customFieldsMappingValidator = $customFieldsMappingValidator;
         $this->subscribeViaRegistrationService = $subscribeViaRegistrationService;
+        $this->request = $this->getRequest();
     }
 
     /**
@@ -92,27 +92,24 @@ class Save extends AbstractController
             return $resultRedirect;
         }
 
-        if ($updateCustomFields) {
+        $customFieldMappingDtoCollection = CustomFieldMappingDtoCollection::createFromRequestData($data);
 
-            $customFieldMappingDtoCollection = CustomFieldMappingDtoCollection::createFromRequestData($data);
+        if (!$this->customFieldsMappingValidator->isValid($customFieldMappingDtoCollection)) {
+            $this->messageManager->addErrorMessage($this->customFieldsMappingValidator->getErrorMessage());
 
-            if (!$this->customFieldsMappingValidator->isValid($customFieldMappingDtoCollection)) {
-                $this->messageManager->addErrorMessage($this->customFieldsMappingValidator->getErrorMessage());
-
-                return $resultRedirect;
-            }
-
-            $this->subscribeViaRegistrationService->saveCustomFieldsMapping(
-                CustomFieldsMappingCollection::createFromDto($customFieldMappingDtoCollection)
-            );
+            return $resultRedirect;
         }
+
+        $this->subscribeViaRegistrationService->saveCustomFieldsMapping(
+            CustomFieldsMappingCollection::createFromDto($customFieldMappingDtoCollection)
+        );
 
         $registrationSettings = SubscribeViaRegistrationFactory::createFromArray([
             'status' => $isEnabled,
             'customFieldsStatus' => $updateCustomFields,
             'campaignId' => $campaignId,
-            'cycleDay' => !empty($autoresponder) ? explode('_', $autoresponder)[0] : '',
-            'autoresponderId' => !empty($autoresponder) ? explode('_', $autoresponder)[1] : '',
+            'cycleDay' => !empty($autoresponder) ? explode('_', $autoresponder)[0] : null,
+            'autoresponderId' => !empty($autoresponder) ? explode('_', $autoresponder)[1] : null,
         ]);
 
         $this->subscribeViaRegistrationService->saveSettings($registrationSettings);

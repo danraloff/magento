@@ -5,7 +5,6 @@ namespace GetResponse\GetResponseIntegration\Test\Unit\Block;
 use GetResponse\GetResponseIntegration\Block\Getresponse;
 use GetResponse\GetResponseIntegration\Block\Registration as RegistrationBlock;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomField\CustomFieldService;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMapping;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingService;
@@ -14,7 +13,7 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistrati
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettings;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Test\BaseTestCase;
-use GrShareCode\GetresponseApiClient;
+use GrShareCode\Api\GetresponseApiClient;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 

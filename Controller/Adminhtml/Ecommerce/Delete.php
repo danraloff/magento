@@ -7,6 +7,7 @@ use GetResponse\GetResponseIntegration\Controller\Adminhtml\AbstractController;
 use GetResponse\GetResponseIntegration\Helper\Message;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryValidator;
+use GrShareCode\Shop\Command\DeleteShopCommand;
 use GrShareCode\Shop\ShopService;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
@@ -51,7 +52,8 @@ class Delete extends AbstractController
             }
 
             $service = new ShopService($this->repositoryFactory->createGetResponseApiClient());
-            $service->deleteShop($id);
+            $service->deleteShop(new DeleteShopCommand($id));
+
             $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setPath(self::BACK_URL);
             return $resultRedirect;

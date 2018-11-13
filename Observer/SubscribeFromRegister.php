@@ -7,8 +7,8 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactService
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistrationService;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GrShareCode\Api\ApiTypeException;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Authorization\ApiTypeException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use Magento\Customer\Model\Customer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -83,13 +83,14 @@ class SubscribeFromRegister implements ObserverInterface
             );
 
             try {
-                $this->contactService->createContact(
+                $this->contactService->addContact(
                     $customerData->getEmail(),
                     $customerData->getFirstname(),
                     $customerData->getLastname(),
                     $registrationSettings->getCampaignId(),
                     $registrationSettings->getCycleDay(),
-                    $contactCustomFieldsCollection
+                    $contactCustomFieldsCollection,
+                    $registrationSettings->isUpdateCustomFieldsEnalbed()
                 );
             } catch (GetresponseApiException $e) {
             } catch (ConnectionSettingsException $e) {

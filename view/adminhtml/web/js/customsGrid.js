@@ -35,7 +35,6 @@ require(['jquery'], function($) {
             getResponseCustomFieldsOptions += '<option value="' + getResponseCustomField['id'] + '">' + getResponseCustomField['name'] + '</option>';
         });
 
-        debugger;
         newCustom = '<tr class="data-row ' + oddRowClass + '">' +
             '<td>' +
             '<div class="data-grid-cell-content">' +

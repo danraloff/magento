@@ -24,8 +24,7 @@ class CustomFieldServiceTest extends BaseTestCase
         $grCustomFieldsService = $this->getMockWithoutConstructing(GrCustomFieldService::class);
         $grCustomFieldsService
             ->expects(self::once())
-            ->method('getAllCustomFields')
-            ->with(new TextFieldCustomFieldFilter());
+            ->method('getCustomFieldsForMapping');
 
         $this->customFieldServiceFactory
             ->expects(self::once())

@@ -6,7 +6,7 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\WebformSettings;
 use GetResponse\GetResponseIntegration\Domain\Magento\WebformSettingsFactory;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\WebForm\WebFormCollection;
 use GrShareCode\WebForm\WebFormService;
 use Magento\Framework\View\Element\Template\Context;
@@ -52,8 +52,8 @@ class Webform extends Template
 
     /**
      * @return WebFormCollection
-     * @throws GetresponseApiException
      * @throws RepositoryException
+     * @throws GetresponseApiException
      */
     public function getWebForms()
     {

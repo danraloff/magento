@@ -8,8 +8,8 @@ use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsExceptio
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository as MagentoRepository;
-use GrShareCode\Api\ApiTypeException;
-use GrShareCode\GetresponseApiClient;
+use GrShareCode\Api\Authorization\ApiTypeException;
+use GrShareCode\Api\GetresponseApiClient;
 use Magento\Framework\App\CacheInterface;
 use Magento\Framework\ObjectManagerInterface;
 

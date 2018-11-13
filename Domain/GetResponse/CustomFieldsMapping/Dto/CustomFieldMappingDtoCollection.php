@@ -21,6 +21,10 @@ class CustomFieldMappingDtoCollection implements IteratorAggregate
     {
         $collection = new self();
 
+        if (!isset($data['gr_sync_order_data'], $data['custom'])){
+            return $collection;
+        }
+
         foreach ($data['custom'] as $key => $customs) {
 
             $collection->add(

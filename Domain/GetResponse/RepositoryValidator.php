@@ -2,8 +2,8 @@
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse;
 
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository as MagentoRepository;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Exception\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
 use Magento\Framework\Controller\ResultFactory;
 
 

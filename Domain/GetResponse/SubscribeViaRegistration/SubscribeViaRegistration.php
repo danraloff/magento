@@ -13,7 +13,7 @@ class SubscribeViaRegistration
     /** @var int */
     private $customFieldsStatus;
 
-    /** @var string */
+    /** @var null|int */
     private $campaignId;
 
     /** @var int */
@@ -26,7 +26,7 @@ class SubscribeViaRegistration
      * @param int $status
      * @param int $customFieldsStatus
      * @param string $campaignId
-     * @param int $cycleDay
+     * @param null|int $cycleDay
      * @param string $autoresponderId
      */
     public function __construct($status, $customFieldsStatus, $campaignId, $cycleDay, $autoresponderId)

@@ -8,7 +8,7 @@ use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
 use GetResponse\GetResponseIntegration\Test\BaseTestCase;
 use GrShareCode\Cart\CartService as GrCartService;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
+use GrShareCode\Api\GetresponseApiClient;
 use GrShareCode\Product\ProductService;
 
 class CartServiceFactoryTest extends BaseTestCase

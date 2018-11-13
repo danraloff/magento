@@ -3,9 +3,9 @@ namespace GetResponse\GetResponseIntegration\Block;
 
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\ContactList\ContactListService;
 use GrShareCode\ContactList\FromFieldsCollection;
-use GrShareCode\GetresponseApiException;
 use Magento\Framework\View\Element\Template\Context;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use Magento\Framework\View\Element\Template;
@@ -39,8 +39,8 @@ class Lists extends Template
 
     /**
      * @return FromFieldsCollection
-     * @throws GetresponseApiException
      * @throws RepositoryException
+     * @throws GetresponseApiException
      */
     public function getAccountFromFields()
     {

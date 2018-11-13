@@ -10,11 +10,10 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
-use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\Exception\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
 use GrShareCode\ContactList\ContactListCollection;
 use GrShareCode\ContactList\ContactListService;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
 use GrShareCode\Shop\ShopsCollection;
 use GrShareCode\Shop\ShopService;
 use Magento\Framework\View\Element\Template;
@@ -77,8 +76,8 @@ class Export extends Template
 
     /**
      * @return ContactListCollection
-     * @throws GetresponseApiException
      * @throws RepositoryException
+     * @throws GetresponseApiException
      */
     public function getCampaigns()
     {
@@ -107,7 +106,6 @@ class Export extends Template
      * @return array
      * @throws GetresponseApiException
      * @throws ConnectionSettingsException
-     * @throws ApiTypeException
      */
     public function getCustomFieldsFromGetResponse()
     {

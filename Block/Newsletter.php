@@ -2,9 +2,10 @@
 namespace GetResponse\GetResponseIntegration\Block;
 
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
+use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettings;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\ContactList\ContactListCollection;
 use GrShareCode\ContactList\ContactListService;
-use GrShareCode\GetresponseApiException;
 use Magento\Framework\View\Element\Template;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
@@ -45,8 +46,8 @@ class Newsletter extends Template
 
     /**
      * @return ContactListCollection
-     * @throws GetresponseApiException
      * @throws RepositoryException
+     * @throws GetresponseApiException
      */
     public function getLists()
     {
@@ -61,6 +62,9 @@ class Newsletter extends Template
         return $this->getResponseBlock->getAutoRespondersForFrontend();
     }
 
+    /**
+     * @return NewsletterSettings
+     */
     public function getNewsletterSettings()
     {
         return $this->getResponseBlock->getNewsletterSettings();

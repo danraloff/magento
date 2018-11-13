@@ -1,17 +1,15 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Domain\Magento;
 
+use GetResponse\GetResponseIntegration\Helper\Config;
 use GetResponse\GetResponseIntegration\Model\CartMap;
 use GetResponse\GetResponseIntegration\Model\OrderMap;
 use GetResponse\GetResponseIntegration\Model\ProductMap;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\Job\Job;
-use GrShareCode\Job\JobCollection;
 use GrShareCode\ProductMapping\ProductMapping;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
-use GetResponse\GetResponseIntegration\Helper\Config;
+use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\Store;
 
 
@@ -227,32 +225,6 @@ class ShareCodeRepository implements DbRepositoryInterface
     }
 
     /**
-     * @param Job $job
-     * @return null
-     */
-    public function addJob(Job $job)
-    {
-
-    }
-
-    /**
-     * @return JobCollection
-     */
-    public function getJobsToProcess()
-    {
-
-    }
-
-    /**
-     * @param Job $job
-     */
-    public function deleteJob(Job $job)
-    {
-
-    }
-
-
-    /**
      * @param int $accountId
      */
     public function markAccountAsInvalid($accountId)
@@ -266,7 +238,7 @@ class ShareCodeRepository implements DbRepositoryInterface
     }
 
     /**
-     * @param $accountId
+     * @param string $accountId
      */
     public function markAccountAsValid($accountId)
     {
@@ -278,11 +250,11 @@ class ShareCodeRepository implements DbRepositoryInterface
 
     /**
      * @param int $accountId
+     * @return string
      */
     public function getInvalidAccountFirstOccurrenceDate($accountId)
     {
         return $this->scopeConfig->getValue(Config::INVALID_REQUEST_DATE_TIME);
-
     }
 
     /**
@@ -296,4 +268,30 @@ class ShareCodeRepository implements DbRepositoryInterface
             Store::DEFAULT_STORE_ID
         );
     }
+
+    /**
+     * @return string
+     */
+    public function getOriginCustomFieldId()
+    {
+        return $this->scopeConfig->getValue(Config::INVALID_REQUEST_DATE_TIME);
+    }
+
+    /**
+     * @param string $originCustomFieldId
+     */
+    public function setOriginCustomFieldId($originCustomFieldId)
+    {
+        $this->configWriter->save(Config::INVALID_REQUEST_DATE_TIME, $originCustomFieldId);
+    }
+
+    public function clearOriginCustomField()
+    {
+        $this->configWriter->delete(
+            Config::CONFIG_DATA_ORIGIN_CUSTOM_FIELD_ID,
+            ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            Store::DEFAULT_STORE_ID
+        );
+    }
+
 }

@@ -4,8 +4,8 @@ namespace GetResponse\GetResponseIntegration\Domain\GetResponse\Contact;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMapping;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\MagentoCustomerAttribute\MagentoCustomerAttributeService;
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use Magento\Customer\Model\Customer;
 
 /**
@@ -58,7 +58,7 @@ class ContactCustomFields
             $customFieldId = $customFieldMapping->getGetResponseCustomId();
 
             $contactCustomFieldCollection->add(
-                new ContactCustomField($customFieldId, $customFieldValue)
+                new ContactCustomField($customFieldId, [$customFieldValue])
             );
         }
 

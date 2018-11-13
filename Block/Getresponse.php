@@ -12,9 +12,9 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistrati
 use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettings;
 use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettingsFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\ContactList\Autoresponder;
 use GrShareCode\ContactList\ContactListService;
-use GrShareCode\GetresponseApiException;
 
 /**
  * Class Getresponse

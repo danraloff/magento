@@ -2,10 +2,8 @@
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse\CustomField;
 
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
-use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\CustomField\CustomFieldCollection;
-use GrShareCode\CustomField\CustomFieldFilter\TextFieldCustomFieldFilter;
-use GrShareCode\GetresponseApiException;
 
 /**
  * Class CustomFieldService
@@ -26,7 +24,6 @@ class CustomFieldService
 
     /**
      * @return CustomFieldCollection
-     * @throws ApiTypeException
      * @throws ConnectionSettingsException
      * @throws GetresponseApiException
      */

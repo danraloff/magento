@@ -1,15 +1,13 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse\ExportOnDemand;
 
-use Exception;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactCustomFields;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactService;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\Order\AddOrderCommandFactory;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\Order\OrderService;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Order\OrderFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GrShareCode\Api\ApiTypeException;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Exception\GetresponseApiException;
+use GrShareCode\Export\Command\ExportContactCommand;
+use GrShareCode\Order\OrderCollection;
 use Magento\Customer\Model\Customer;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Sales\Model\Order;
@@ -20,54 +18,55 @@ use Magento\Sales\Model\Order;
  */
 class ExportOnDemandService
 {
-    /** @var ContactService */
-    private $contactService;
-
     /** @var ContactCustomFields */
     private $contactCustomFields;
 
     /** @var Repository */
     private $repository;
 
-    /** @var OrderService */
-    private $orderService;
+    /** @var OrderFactory */
+    private $orderFactory;
 
-    /** @var AddOrderCommandFactory */
-    private $addOrderCommandFactory;
+    /** @var ExportServiceFactory */
+    private $exportServiceFactory;
 
     public function __construct(
         Repository $repository,
-        ContactService $contactService,
         ContactCustomFields $contactCustomFields,
-        OrderService $orderService,
-        AddOrderCommandFactory $addOrderCommandFactory
+        OrderFactory $orderFactory,
+        ExportServiceFactory $exportServiceFactory
     ) {
-        $this->contactService = $contactService;
-        $this->contactCustomFields = $contactCustomFields;
         $this->repository = $repository;
-        $this->orderService = $orderService;
-        $this->addOrderCommandFactory = $addOrderCommandFactory;
+        $this->contactCustomFields = $contactCustomFields;
+        $this->orderFactory = $orderFactory;
+        $this->exportServiceFactory = $exportServiceFactory;
     }
 
     /**
      * @param Subscriber $subscriber
      * @param ExportOnDemand $exportOnDemand
-     * @throws ApiTypeException
      * @throws ConnectionSettingsException
      * @throws GetresponseApiException
      */
     public function export(Subscriber $subscriber, ExportOnDemand $exportOnDemand)
     {
+        $grExportService = $this->exportServiceFactory->create();
+
         if (!$this->subscriberIsAlsoCustomer($subscriber)) {
-            $this->sendSubscriberToGetResponse($subscriber, $exportOnDemand);
+
+            $grExportService->exportContact(
+                $this->createExportCommandForSubscriber($subscriber, $exportOnDemand)
+            );
 
             return;
         }
 
         $customer = $this->repository->loadCustomer($subscriber->getCustomerId());
 
-        $this->sendCustomerToGetResponse($customer, $exportOnDemand);
-        $this->sendCustomerOrdersToGetResponse($customer, $exportOnDemand);
+        $grExportService->exportContact(
+            $this->createExportCommandForCustomer($customer, $exportOnDemand)
+        );
+
     }
 
     /**
@@ -82,55 +81,56 @@ class ExportOnDemandService
     /**
      * @param Subscriber $subscriber
      * @param ExportOnDemand $exportOnDemand
-     * @throws ApiTypeException
-     * @throws ConnectionSettingsException
-     * @throws GetresponseApiException
+     * @return ExportContactCommand
      */
-    private function sendSubscriberToGetResponse(Subscriber $subscriber, ExportOnDemand $exportOnDemand)
+    private function createExportCommandForSubscriber(Subscriber $subscriber, ExportOnDemand $exportOnDemand)
     {
-        $this->contactService->upsertContact(
+        $exportSettings = ExportSettingsFactory::createFromExportOnDemand($exportOnDemand);
+
+        return new ExportContactCommand(
             $subscriber['subscriber_email'],
             '',
-            '',
-            $exportOnDemand->getContactListId(),
-            $exportOnDemand->getDayOfCycle(),
-            $this->contactCustomFields->getForSubscriber()
+            $exportSettings,
+            $this->contactCustomFields->getForSubscriber(),
+            new OrderCollection()
         );
     }
 
     /**
      * @param Customer $customer
      * @param ExportOnDemand $exportOnDemand
-     * @throws ApiTypeException
-     * @throws ConnectionSettingsException
-     * @throws GetresponseApiException
+     * @return ExportContactCommand
      */
-    private function sendCustomerToGetResponse(Customer $customer, ExportOnDemand $exportOnDemand)
+    private function createExportCommandForCustomer($customer, ExportOnDemand $exportOnDemand)
     {
+        $exportSettings = ExportSettingsFactory::createFromExportOnDemand($exportOnDemand);
+
         $contactCustomFieldCollection = $this->contactCustomFields->getFromCustomer(
             $customer,
             $exportOnDemand->getCustomFieldsMappingCollection(),
             $exportOnDemand->isUpdateContactCustomFieldEnabled()
         );
 
-        $this->contactService->upsertContact(
+        return new ExportContactCommand(
             $customer->getEmail(),
-            $customer->getFirstname(),
-            $customer->getLastname(),
-            $exportOnDemand->getContactListId(),
-            $exportOnDemand->getDayOfCycle(),
-            $contactCustomFieldCollection
+            trim($customer->getFirstname() . ' ' . $customer->getLastname()),
+            $exportSettings,
+            $contactCustomFieldCollection,
+            $this->getCustomerOrderCollection($customer, $exportOnDemand)
         );
     }
 
     /**
      * @param Customer $customer
      * @param ExportOnDemand $exportOnDemand
+     * @return OrderCollection
      */
-    private function sendCustomerOrdersToGetResponse(Customer $customer, ExportOnDemand $exportOnDemand)
+    private function getCustomerOrderCollection(Customer $customer, ExportOnDemand $exportOnDemand)
     {
+        $orderCollection = new OrderCollection();
+
         if (!$exportOnDemand->isSendEcommerceDataEnabled()) {
-            return;
+            return $orderCollection;
         }
 
         $orders = $this->repository->getOrderByCustomerId($customer->getId());
@@ -138,17 +138,12 @@ class ExportOnDemandService
         /** @var Order $order */
         foreach ($orders as $order) {
 
-            try {
-                $this->orderService->exportOrder(
-                    $this->addOrderCommandFactory->createForOrderService(
-                        $order,
-                        $exportOnDemand->getContactListId(),
-                        $exportOnDemand->getShopId()
-                    )
-                );
-            } catch (Exception $e) {
-            }
+            $orderCollection->add(
+                $this->orderFactory->fromMagentoOrder($order)
+            );
         }
+
+        return $orderCollection;
     }
 
 }

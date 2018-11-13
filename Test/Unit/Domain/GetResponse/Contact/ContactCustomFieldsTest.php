@@ -6,8 +6,8 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\Cu
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\MagentoCustomerAttribute\MagentoCustomerAttributeService;
 use GetResponse\GetResponseIntegration\Test\BaseTestCase;
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use Magento\Customer\Model\Customer;
 
 class ContactCustomFieldsTest extends BaseTestCase
@@ -74,9 +74,9 @@ class ContactCustomFieldsTest extends BaseTestCase
         $isCustomFieldUpdateEnabled = true;
 
         $expectedContactCustomFieldsCollection = new ContactCustomFieldsCollection();
-        $expectedContactCustomFieldsCollection->add(new ContactCustomField($getResponseCustomId1, $customerAttributeValue1));
-        $expectedContactCustomFieldsCollection->add(new ContactCustomField($getResponseCustomId2, $customerAttributeValue2));
-        $expectedContactCustomFieldsCollection->add(new ContactCustomField($getResponseCustomId3, $customerAttributeValue3));
+        $expectedContactCustomFieldsCollection->add(new ContactCustomField($getResponseCustomId1, [$customerAttributeValue1]));
+        $expectedContactCustomFieldsCollection->add(new ContactCustomField($getResponseCustomId2, [$customerAttributeValue2]));
+        $expectedContactCustomFieldsCollection->add(new ContactCustomField($getResponseCustomId3, [$customerAttributeValue3]));
 
         $actualContactCustomFieldsCollection = $this->sut->getFromCustomer($customer, $customFieldsMappingCollection, $isCustomFieldUpdateEnabled);
 
@@ -143,7 +143,7 @@ class ContactCustomFieldsTest extends BaseTestCase
         $isCustomFieldUpdateEnabled = true;
 
         $expectedContactCustomFieldsCollection = new ContactCustomFieldsCollection();
-        $expectedContactCustomFieldsCollection->add(new ContactCustomField($getResponseCustomId2, $customerAttributeValue2));
+        $expectedContactCustomFieldsCollection->add(new ContactCustomField($getResponseCustomId2, [$customerAttributeValue2]));
 
         $actualContactCustomFieldsCollection = $this->sut->getFromCustomer($customer, $customFieldsMappingCollection, $isCustomFieldUpdateEnabled);
 

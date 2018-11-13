@@ -5,10 +5,10 @@ namespace GetResponse\GetResponseIntegration\Domain\GetResponse\Cart;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Product\ProductFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GrShareCode\Api\ApiTypeException;
-use GrShareCode\Cart\AddCartCommand;
+use GrShareCode\Api\Authorization\ApiTypeException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Cart\Cart;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Cart\Command\AddCartCommand;
 use GrShareCode\Product\Product;
 use GrShareCode\Product\ProductsCollection;
 use GrShareCode\Product\Variant\Variant;
@@ -73,18 +73,23 @@ class CartService
      * @param int $quoteId
      * @param string $contactListId
      * @param string $grShopId
-     * @throws GetresponseApiException
-     * @throws ApiTypeException
      * @throws ConnectionSettingsException
+     * @throws ApiTypeException
+     * @throws GetresponseApiException
      */
     public function sendCart($quoteId, $contactListId, $grShopId)
     {
         $cartService = $this->cartServiceFactory->create();
         $quote = $this->repository->getQuoteById($quoteId);
         $cart = $this->getCart($quote);
-        $cartService->sendCart(new AddCartCommand(
-            $cart, $quote->getCustomerEmail(), $contactListId, $grShopId
-        ));
+        $cartService->sendCart(
+            new AddCartCommand(
+                $cart,
+                $quote->getCustomerEmail(),
+                $contactListId,
+                $grShopId
+            )
+        );
     }
 
     /**

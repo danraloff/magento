@@ -3,13 +3,18 @@
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse\Contact;
 
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiTypeFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\Config;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
-use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\Authorization\ApiTypeException;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldCollectionFactory;
+use GrShareCode\Contact\ContactFactory;
+use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService as GrContactService;
+use GrShareCode\CustomField\CustomFieldService;
 
 /**
  * Class ContactServiceFactory
@@ -35,8 +40,8 @@ class ContactServiceFactory
 
     /**
      * @return GrContactService
-     * @throws ApiTypeException
      * @throws ConnectionSettingsException
+     * @throws ApiTypeException
      */
     public function create()
     {
@@ -49,6 +54,13 @@ class ContactServiceFactory
             $this->magentoRepository->getGetResponsePluginVersion()
         );
 
-        return new GrContactService($getResponseApi);
+        return new GrContactService(
+            $getResponseApi,
+            new ContactPayloadFactory(),
+            new ContactFactory(new ContactCustomFieldCollectionFactory()),
+            new CustomFieldService($getResponseApi),
+            $this->shareCodeRepository,
+            Config::ORIGIN_NAME
+        );
     }
 }

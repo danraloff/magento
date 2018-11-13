@@ -6,7 +6,7 @@ use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
 use GetResponse\GetResponseIntegration\Test\BaseTestCase;
 use GrShareCode\Contact\ContactService as GrContactService;
-use GrShareCode\GetresponseApiClient;
+use GrShareCode\Api\GetresponseApiClient;
 
 /**
  * Class ContactServiceFactoryTest
