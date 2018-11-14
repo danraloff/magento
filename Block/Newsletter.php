@@ -2,14 +2,13 @@
 namespace GetResponse\GetResponseIntegration\Block;
 
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
-use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettings;
-use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\ContactList\ContactListCollection;
 use GrShareCode\ContactList\ContactListService;
+use GrShareCode\GetresponseApiException;
 use Magento\Framework\View\Element\Template;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use Magento\Framework\View\Element\Template\Context;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 
 /**
  * Class Newsletter
@@ -20,8 +19,8 @@ class Newsletter extends Template
     /** @var Repository */
     private $repository;
 
-    /** @var RepositoryFactory */
-    private $repositoryFactory;
+    /** @var GetresponseApiClientFactory */
+    private $apiClientFactory;
 
     /** @var Getresponse */
     private $getResponseBlock;
@@ -29,18 +28,18 @@ class Newsletter extends Template
     /**
      * @param Context $context
      * @param Repository $repository
-     * @param RepositoryFactory $repositoryFactory
+     * @param GetresponseApiClientFactory $apiClientFactory
      * @param Getresponse $getResponseBlock
      */
     public function __construct(
         Context $context,
         Repository $repository,
-        RepositoryFactory $repositoryFactory,
+        GetresponseApiClientFactory $apiClientFactory,
         Getresponse $getResponseBlock
     ) {
         parent::__construct($context);
         $this->repository = $repository;
-        $this->repositoryFactory = $repositoryFactory;
+        $this->apiClientFactory = $apiClientFactory;
         $this->getResponseBlock = $getResponseBlock;
     }
 
@@ -51,7 +50,7 @@ class Newsletter extends Template
      */
     public function getLists()
     {
-        return (new ContactListService($this->repositoryFactory->createGetResponseApiClient()))->getAllContactLists();
+        return (new ContactListService($this->apiClientFactory->createGetResponseApiClient()))->getAllContactLists();
     }
 
     /**
@@ -62,9 +61,6 @@ class Newsletter extends Template
         return $this->getResponseBlock->getAutoRespondersForFrontend();
     }
 
-    /**
-     * @return NewsletterSettings
-     */
     public function getNewsletterSettings()
     {
         return $this->getResponseBlock->getNewsletterSettings();

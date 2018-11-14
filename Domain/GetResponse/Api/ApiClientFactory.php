@@ -1,23 +1,26 @@
 <?php
-
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse;
 
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiTypeFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\Config;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettings;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository as MagentoRepository;
+use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
+use GrShareCode\Api\Authorization\ApiKeyAuthorization;
 use GrShareCode\Api\Authorization\ApiTypeException;
+use GrShareCode\Api\GetresponseApi;
 use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\UserAgentHeader;
 use Magento\Framework\App\CacheInterface;
 use Magento\Framework\ObjectManagerInterface;
 
 /**
- * Class RepositoryFactory
- * @package GetResponse\GetResponseIntegration\Domain\GetResponse
+ * Class GetresponseApiClientFactory
+ * @package ShareCode
  */
-class RepositoryFactory
+class GetresponseApiClientFactory
 {
     /** @var MagentoRepository */
     private $repository;
@@ -59,18 +62,44 @@ class RepositoryFactory
             $settings = ConnectionSettingsFactory::createFromArray(
                 $this->repository->getConnectionSettings()
             );
-            return GetresponseApiClientFactory::createFromParams(
+
+            return $this->createFromParams(
                 $settings->getApiKey(),
                 ApiTypeFactory::createFromConnectionSettings($settings),
-                $settings->getDomain(),
-                $this->sharedCodeRepository,
-                $this->repository->getGetResponsePluginVersion()
+                $settings->getDomain()
             );
         } catch (ConnectionSettingsException $e) {
             throw RepositoryException::buildForInvalidApiKey();
         } catch (ApiTypeException $e) {
             throw RepositoryException::buildForInvalidApiKey();
         }
+    }
+
+    /**
+     * @param $apiKey
+     * @param $apiType
+     * @param $domain
+     * @return GetresponseApiClient
+     * @throws ApiTypeException
+     */
+    public function createFromParams($apiKey, $apiType, $domain)
+    {
+        return new GetresponseApiClient(
+            new GetresponseApi(
+                new ApiKeyAuthorization(
+                    $apiKey,
+                    $apiType,
+                    $domain
+                ),
+                Config::X_APP_ID,
+                new UserAgentHeader(
+                    Config::SERVICE_NAME,
+                    Config::SERVICE_VERSION,
+                    $this->repository->getGetResponsePluginVersion()
+                )
+            ),
+            $this->sharedCodeRepository
+        );
     }
 
     /**
@@ -85,12 +114,10 @@ class RepositoryFactory
             throw RepositoryException::buildForInvalidApiKey();
         }
 
-        return GetresponseApiClientFactory::createFromParams(
+        return $this->createFromParams(
             $settings->getApiKey(),
             ApiTypeFactory::createFromConnectionSettings($settings),
-            $settings->getDomain(),
-            $this->sharedCodeRepository,
-            $this->repository->getGetResponsePluginVersion()
+            $settings->getDomain()
         );
     }
 }

@@ -5,15 +5,15 @@ use GetResponse\GetResponseIntegration\Block\Export;
 use GetResponse\GetResponseIntegration\Block\Export as ExportBlock;
 use GetResponse\GetResponseIntegration\Block\Getresponse;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomField\CustomFieldService;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMapping;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingService;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Test\BaseTestCase;
-use GrShareCode\GetresponseApiClient;
+use GrShareCode\Api\GetresponseApiClient;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 
@@ -29,8 +29,8 @@ class ExportTest extends BaseTestCase
     /** @var Repository|\PHPUnit_Framework_MockObject_MockObject */
     private $repository;
 
-    /** @var RepositoryFactory|\PHPUnit_Framework_MockObject_MockObject */
-    private $repositoryFactory;
+    /** @var GetresponseApiClientFactory|\PHPUnit_Framework_MockObject_MockObject */
+    private $apiClientFactory;
 
     /** @var ExportBlock */
     private $exportBlock;
@@ -51,17 +51,17 @@ class ExportTest extends BaseTestCase
     {
         $this->context = $this->getMockWithoutConstructing(Context::class);
         $this->repository = $this->getMockWithoutConstructing(Repository::class);
-        $this->repositoryFactory = $this->getMockWithoutConstructing(RepositoryFactory::class);
+        $this->apiClientFactory = $this->getMockWithoutConstructing(RepositoryFactory::class);
         $this->objectManager = $this->getMockWithoutConstructing(ObjectManagerInterface::class);
         $this->grApiClient = $this->getMockWithoutConstructing(GetresponseApiClient::class);
 
         $this->customFieldsService = $this->getMockWithoutConstructing(CustomFieldService::class);
         $this->customFieldsMappingService = $this->getMockWithoutConstructing(CustomFieldsMappingService::class);
 
-        $getresponseBlock = new Getresponse($this->repository, $this->repositoryFactory);
+        $getresponseBlock = new Getresponse($this->repository, $this->apiClientFactory);
         $this->exportBlock = new ExportBlock(
             $this->context,
-            $this->repositoryFactory,
+            $this->apiClientFactory,
             $getresponseBlock,
             $this->customFieldsService,
             $this->customFieldsMappingService

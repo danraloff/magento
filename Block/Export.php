@@ -6,8 +6,8 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomField\CustomFiel
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingService;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\MagentoCustomerAttribute\MagentoCustomerAttributeCollection;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GrShareCode\Api\Exception\GetresponseApiException;
@@ -26,7 +26,7 @@ use Magento\Framework\View\Element\Template\Context;
 class Export extends Template
 {
     /** @var GetresponseApiClient */
-    private $repositoryFactory;
+    private $apiClientFactory;
 
     /** @var Getresponse */
     private $getResponseBlock;
@@ -39,20 +39,20 @@ class Export extends Template
 
     /**
      * @param Context $context
-     * @param RepositoryFactory $repositoryFactory
+     * @param GetresponseApiClientFactory $apiClientFactory
      * @param Getresponse $getResponseBlock
      * @param CustomFieldService $customFieldService
      * @param CustomFieldsMappingService $customFieldsMappingService
      */
     public function __construct(
         Context $context,
-        RepositoryFactory $repositoryFactory,
+        GetresponseApiClientFactory $apiClientFactory,
         Getresponse $getResponseBlock,
         CustomFieldService $customFieldService,
         CustomFieldsMappingService $customFieldsMappingService
     ) {
         parent::__construct($context);
-        $this->repositoryFactory = $repositoryFactory;
+        $this->apiClientFactory = $apiClientFactory;
         $this->getResponseBlock = $getResponseBlock;
         $this->customFieldService = $customFieldService;
         $this->customFieldsMappingService = $customFieldsMappingService;
@@ -81,7 +81,7 @@ class Export extends Template
      */
     public function getCampaigns()
     {
-        return (new ContactListService($this->repositoryFactory->createGetResponseApiClient()))->getAllContactLists();
+        return (new ContactListService($this->apiClientFactory->createGetResponseApiClient()))->getAllContactLists();
     }
 
     /**
@@ -91,7 +91,7 @@ class Export extends Template
      */
     public function getShops()
     {
-        return (new ShopService($this->repositoryFactory->createGetResponseApiClient()))->getAllShops();
+        return (new ShopService($this->apiClientFactory->createGetResponseApiClient()))->getAllShops();
     }
 
     /**

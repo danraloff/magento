@@ -1,53 +1,78 @@
 <?php
-
 namespace GetResponse\GetResponseIntegration\Block;
 
-use GetResponse\GetResponseIntegration\Domain\GetResponse\Account as GrAccount;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\AccountFactory;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistrationFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettings;
-use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettingsFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GrShareCode\Api\Exception\GetresponseApiException;
+use Exception;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiClientFactory;
+use GetResponse\GetResponseIntegration\Helper\Config;
+use GetResponse\GetResponseIntegration\Logger\Logger;
 use GrShareCode\ContactList\Autoresponder;
 use GrShareCode\ContactList\ContactListService;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 
 /**
- * Class Getresponse
+ * Class GetResponse
  * @package GetResponse\GetResponseIntegration\Block
  */
-class Getresponse
+class GetResponse extends Template
 {
-    /** @var Repository */
-    private $repository;
+    /** @var ManagerInterface */
+    private $messageManager;
 
-    /** @var RepositoryFactory */
-    private $repositoryFactory;
+    /** @var RedirectFactory */
+    private $redirectFactory;
+
+    /** @var ApiClientFactory */
+    private $apiClientFactory;
+
+    /** @var Logger */
+    private $logger;
 
     /**
-     * @param Repository $repository
-     * @param RepositoryFactory $repositoryFactory
+     * @param Context $context
+     * @param ManagerInterface $messageManager
+     * @param RedirectFactory $redirectFactory
+     * @param ApiClientFactory $apiClientFactory
+     * @param Logger $logger
      */
     public function __construct(
-        Repository $repository,
-        RepositoryFactory $repositoryFactory
+        Context $context,
+        ManagerInterface $messageManager,
+        RedirectFactory $redirectFactory,
+        ApiClientFactory $apiClientFactory,
+        Logger $logger
     ) {
-        $this->repository = $repository;
-        $this->repositoryFactory = $repositoryFactory;
+        parent::__construct($context);
+        $this->messageManager = $messageManager;
+        $this->redirectFactory = $redirectFactory;
+        $this->apiClientFactory = $apiClientFactory;
+        $this->logger = $logger;
     }
 
     /**
      * @return array
      */
+    public function getAutoRespondersForFrontend()
+    {
+        $responders = $this->getAutoResponders();
+        if (empty($responders)) {
+            return [];
+        }
+
+        return $responders;
+    }
+
+    /**
+     * @return array|Redirect
+     */
     public function getAutoResponders()
     {
         try {
             $result = [];
-            $grApiClient = $this->repositoryFactory->createGetResponseApiClient();
+            $grApiClient = $this->apiClientFactory->createGetResponseApiClient();
 
             $service = new ContactListService($grApiClient);
             $responders = $service->getAutoresponders();
@@ -62,61 +87,29 @@ class Getresponse
             }
 
             return $result;
-        } catch (RepositoryException $e) {
-            return [];
-        } catch (GetresponseApiException $e) {
-            return [];
+        } catch (\Exception $e) {
+            return $this->handleException($e);
         }
     }
 
     /**
-     * @return array
+     * @param Exception $e
+     * @return Redirect
      */
-    public function getAutoRespondersForFrontend()
+    protected function handleException(Exception $e)
     {
-        $responders = $this->getAutoResponders();
-        if (empty($responders)) {
-            return [];
-        }
-        return $responders;
+        $this->logger->addError($e->getMessage(), ['exception' => $e]);
+        $this->messageManager->addErrorMessage($e->getMessage());
+
+        return $this->redirectFactory->create()->setPath(Config::PLUGIN_MAIN_PAGE);
     }
 
     /**
-     * @return SubscribeViaRegistration
+     * @return ApiClientFactory
      */
-    public function getRegistrationSettings()
+    public function getApiClientFactory()
     {
-        return SubscribeViaRegistrationFactory::createFromArray(
-            $this->repository->getRegistrationSettings()
-        );
-    }
-
-    /**
-     * @return NewsletterSettings
-     */
-    public function getNewsletterSettings()
-    {
-        return NewsletterSettingsFactory::createFromArray(
-            $this->repository->getNewsletterSettings()
-        );
-    }
-
-    /**
-     * @return CustomFieldsMappingCollection
-     */
-    public function getCustomFieldsMappingForRegistration()
-    {
-        return CustomFieldsMappingCollection::createFromRepository(
-            $this->repository->getCustomFieldsMappingForRegistration()
-        );
-    }
-
-    /**
-     * @return GrAccount
-     */
-    public function getAccountInfo()
-    {
-        return AccountFactory::createFromArray($this->repository->getAccountInfo());
+        return $this->apiClientFactory;
     }
 
 }

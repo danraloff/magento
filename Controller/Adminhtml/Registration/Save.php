@@ -5,7 +5,6 @@ use GetResponse\GetResponseIntegration\Controller\Adminhtml\AbstractController;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingValidator;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\Dto\CustomFieldMappingDtoCollection;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryValidator;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistrationFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistrationService;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
@@ -43,7 +42,6 @@ class Save extends AbstractController
      * @param Context $context
      * @param PageFactory $resultPageFactory
      * @param Repository $repository
-     * @param RepositoryValidator $repositoryValidator
      * @param CustomFieldsMappingValidator $customFieldsMappingValidator
      * @param SubscribeViaRegistrationService $subscribeViaRegistrationService
      */
@@ -51,11 +49,10 @@ class Save extends AbstractController
         Context $context,
         PageFactory $resultPageFactory,
         Repository $repository,
-        RepositoryValidator $repositoryValidator,
         CustomFieldsMappingValidator $customFieldsMappingValidator,
         SubscribeViaRegistrationService $subscribeViaRegistrationService
     ) {
-        parent::__construct($context, $repositoryValidator);
+        parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
         $this->repository = $repository;
         $this->customFieldsMappingValidator = $customFieldsMappingValidator;

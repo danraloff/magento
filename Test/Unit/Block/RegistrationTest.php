@@ -8,7 +8,7 @@ use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomField\CustomFiel
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMapping;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingService;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettings;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
@@ -30,8 +30,8 @@ class RegistrationTest extends BaseTestCase
     /** @var Repository|\PHPUnit_Framework_MockObject_MockObject */
     private $repository;
 
-    /** @var RepositoryFactory|\PHPUnit_Framework_MockObject_MockObject */
-    private $repositoryFactory;
+    /** @var GetresponseApiClientFactory|\PHPUnit_Framework_MockObject_MockObject */
+    private $apiClientFactory;
 
     /** @var RegistrationBlock registrationBlock */
     private $registrationBlock;
@@ -52,16 +52,17 @@ class RegistrationTest extends BaseTestCase
     {
         $this->context = $this->getMockWithoutConstructing(Context::class);
         $this->repository = $this->getMockWithoutConstructing(Repository::class);
-        $this->repositoryFactory = $this->getMockWithoutConstructing(RepositoryFactory::class);
+        $this->apiClientFactory = $this->getMockWithoutConstructing(GetresponseApiClientFactory::class);
         $this->objectManager = $this->getMockWithoutConstructing(ObjectManagerInterface::class);
         $this->grApiClient = $this->getMockWithoutConstructing(GetresponseApiClient::class);
-        $this->repositoryFactory->method('createGetResponseApiClient')->willReturn($this->grApiClient);
+        $this->apiClientFactory->method('createGetResponseApiClient')->willReturn($this->grApiClient);
         $this->customFieldsService = $this->getMockWithoutConstructing(CustomFieldService::class);
         $this->customFieldsMappingService = $this->getMockWithoutConstructing(CustomFieldsMappingService::class);
-        $getresponseBlock = new Getresponse($this->repository, $this->repositoryFactory);
+
+        $getresponseBlock = new Getresponse($this->repository, $this->apiClientFactory);
         $this->registrationBlock = new RegistrationBlock(
             $this->context,
-            $this->repositoryFactory,
+            $this->apiClientFactory,
             $getresponseBlock,
             $this->customFieldsService,
             $this->customFieldsMappingService

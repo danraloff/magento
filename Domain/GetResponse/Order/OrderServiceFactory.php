@@ -25,14 +25,22 @@ class OrderServiceFactory
     /** @var ShareCodeRepository */
     private $sharedCodeRepository;
 
+    /** @var GetresponseApiClientFactory */
+    private $apiClientFactory;
+
     /**
      * @param Repository $magentoRepository
      * @param ShareCodeRepository $sharedCodeRepository
+     * @param GetresponseApiClientFactory $apiClientFactory
      */
-    public function __construct(Repository $magentoRepository, ShareCodeRepository $sharedCodeRepository)
-    {
+    public function __construct(
+        Repository $magentoRepository,
+        ShareCodeRepository $sharedCodeRepository,
+        GetresponseApiClientFactory $apiClientFactory
+    ) {
         $this->magentoRepository = $magentoRepository;
         $this->sharedCodeRepository = $sharedCodeRepository;
+        $this->apiClientFactory = $apiClientFactory;
     }
 
     /**
@@ -43,12 +51,10 @@ class OrderServiceFactory
     public function create()
     {
         $settings = ConnectionSettingsFactory::createFromArray($this->magentoRepository->getConnectionSettings());
-        $getResponseApi = GetresponseApiClientFactory::createFromParams(
+        $getResponseApi = $this->apiClientFactory->createFromParams(
             $settings->getApiKey(),
             ApiTypeFactory::createFromConnectionSettings($settings),
-            $settings->getDomain(),
-            $this->sharedCodeRepository,
-            $this->magentoRepository->getGetResponsePluginVersion()
+            $settings->getDomain()
         );
 
         $productService = new ProductServiceFactory($getResponseApi, $this->sharedCodeRepository);
@@ -60,5 +66,4 @@ class OrderServiceFactory
             new OrderPayloadFactory()
         );
     }
-
 }

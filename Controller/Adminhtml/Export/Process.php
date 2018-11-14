@@ -63,8 +63,6 @@ class Process extends AbstractController
         $this->repository = $repository;
         $this->exportOnDemandValidator = $exportOnDemandValidator;
         $this->exportOnDemandService = $exportOnDemandService;
-
-        return $this->checkGetResponseConnection();
     }
 
     /**

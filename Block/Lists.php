@@ -1,11 +1,10 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Block;
 
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
-use GrShareCode\Api\Exception\GetresponseApiException;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 use GrShareCode\ContactList\ContactListService;
 use GrShareCode\ContactList\FromFieldsCollection;
+use GrShareCode\GetresponseApiException;
 use Magento\Framework\View\Element\Template\Context;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use Magento\Framework\View\Element\Template;
@@ -19,22 +18,22 @@ class Lists extends Template
     /** @var Repository */
     private $repository;
 
-    /** @var RepositoryFactory */
-    private $repositoryFactory;
+    /** @var GetresponseApiClientFactory */
+    private $apiClientFactory;
 
     /**
      * @param Context $context
      * @param Repository $repository
-     * @param RepositoryFactory $repositoryFactory
+     * @param GetresponseApiClientFactory $apiClientFactory,
      */
     public function __construct(
         Context $context,
         Repository $repository,
-        RepositoryFactory $repositoryFactory
+        GetresponseApiClientFactory $apiClientFactory
     ) {
         parent::__construct($context);
         $this->repository = $repository;
-        $this->repositoryFactory = $repositoryFactory;
+        $this->apiClientFactory = $apiClientFactory;
     }
 
     /**
@@ -44,7 +43,7 @@ class Lists extends Template
      */
     public function getAccountFromFields()
     {
-        $service = new ContactListService($this->repositoryFactory->createGetResponseApiClient());
+        $service = new ContactListService($this->apiClientFactory->createGetResponseApiClient());
         return $service->getFromFields();
     }
 
@@ -57,7 +56,7 @@ class Lists extends Template
     {
         $countryCode = $this->repository->getMagentoCountryCode();
         $lang = substr($countryCode, 0, 2);
-        $apiClient = $this->repositoryFactory->createGetResponseApiClient();
+        $apiClient = $this->apiClientFactory->createGetResponseApiClient();
         return $apiClient->getSubscriptionConfirmationSubject($lang);
     }
 
@@ -70,7 +69,7 @@ class Lists extends Template
     {
         $countryCode = $this->repository->getMagentoCountryCode();
         $lang = substr($countryCode, 0, 2);
-        $apiClient = $this->repositoryFactory->createGetResponseApiClient();
+        $apiClient = $this->apiClientFactory->createGetResponseApiClient();
         return $apiClient->getSubscriptionConfirmationBody($lang);
     }
 

@@ -1,12 +1,13 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Block;
 
+use Ebizmarts\MailChimp\Controller\Adminhtml\Errors\Getresponse;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomField\CustomFieldService;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingService;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\MagentoCustomerAttribute\MagentoCustomerAttributeCollection;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GrShareCode\Api\Exception\GetresponseApiException;
@@ -21,8 +22,8 @@ use Magento\Framework\View\Element\Template\Context;
  */
 class Registration extends Template
 {
-    /** @var RepositoryFactory */
-    private $repositoryFactory;
+    /** @var GetresponseApiClientFactory */
+    private $apiClientFactory;
 
     /** @var Getresponse */
     private $getresponseBlock;
@@ -35,20 +36,20 @@ class Registration extends Template
 
     /**
      * @param Context $context
-     * @param RepositoryFactory $repositoryFactory
+     * @param GetresponseApiClientFactory $apiClientFactory
      * @param Getresponse $getResponseBlock
      * @param CustomFieldService $customFieldService
      * @param CustomFieldsMappingService $customFieldsMappingService
      */
     public function __construct(
         Context $context,
-        RepositoryFactory $repositoryFactory,
+        GetresponseApiClientFactory $apiClientFactory,
         Getresponse $getResponseBlock,
         CustomFieldService $customFieldService,
         CustomFieldsMappingService $customFieldsMappingService
     ) {
         parent::__construct($context);
-        $this->repositoryFactory = $repositoryFactory;
+        $this->apiClientFactory = $apiClientFactory;
         $this->getresponseBlock = $getResponseBlock;
         $this->customFieldService = $customFieldService;
         $this->customFieldsMappingService = $customFieldsMappingService;
@@ -56,12 +57,12 @@ class Registration extends Template
 
     /**
      * @return ContactListCollection
-     * @throws RepositoryException
      * @throws GetresponseApiException
+     * @throws RepositoryException
      */
     public function getCampaigns()
     {
-        return (new ContactListService($this->repositoryFactory->createGetResponseApiClient()))->getAllContactLists();
+        return (new ContactListService($this->apiClientFactory->createGetResponseApiClient()))->getAllContactLists();
     }
 
     /**
@@ -69,7 +70,7 @@ class Registration extends Template
      */
     public function getAutoResponders()
     {
-       return $this->getresponseBlock->getAutoResponders();
+        return $this->getresponseBlock->getAutoResponders();
     }
 
     /**

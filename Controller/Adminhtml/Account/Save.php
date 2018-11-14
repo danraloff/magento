@@ -11,6 +11,8 @@ use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\TrackingCode\TrackingCodeService;
 use Magento\Backend\App\Action;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\DefaultCustomFieldsFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
 use GetResponse\GetResponseIntegration\Helper\Config;
 use Magento\Backend\App\Action\Context;
@@ -36,21 +38,21 @@ class Save extends Action
     /** @var Repository */
     private $repository;
 
-    /** @var RepositoryFactory */
-    private $repositoryFactory;
+    /** @var GetresponseApiClientFactory */
+    private $apiClientFactory;
 
     /** @var CustomFieldsMappingService */
     private $customFieldsMappingService;
 
     /**
      * @param Context $context
-     * @param RepositoryFactory $repositoryFactory
+     * @param GetresponseApiClientFactory $apiClientFactory
      * @param Repository $repository
      * @param CustomFieldsMappingService $customFieldsMappingService
      */
     public function __construct(
         Context $context,
-        RepositoryFactory $repositoryFactory,
+        GetresponseApiClientFactory $apiClientFactory,
         Repository $repository,
         CustomFieldsMappingService $customFieldsMappingService
     ) {
@@ -58,9 +60,10 @@ class Save extends Action
 
         $this->request = $this->getRequest();
         $this->repository = $repository;
-        $this->repositoryFactory = $repositoryFactory;
+        $this->apiClientFactory = $apiClientFactory;
         $this->customFieldsMappingService = $customFieldsMappingService;
     }
+
 
     /**
      * @return ResponseInterface|Page
@@ -75,7 +78,7 @@ class Save extends Action
         }
 
         try {
-            $grApiClient = $this->repositoryFactory->createApiClientFromConnectionSettings($connectionSettings);
+            $grApiClient = $this->apiClientFactory->createApiClientFromConnectionSettings($connectionSettings);
             $grApiClient->checkConnection();
 
             $accountService = new AccountService($grApiClient);
