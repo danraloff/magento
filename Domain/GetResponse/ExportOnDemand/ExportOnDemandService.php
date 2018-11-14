@@ -1,9 +1,9 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse\ExportOnDemand;
 
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactCustomFields;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Order\OrderFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Export\Command\ExportContactCommand;
@@ -45,8 +45,8 @@ class ExportOnDemandService
     /**
      * @param Subscriber $subscriber
      * @param ExportOnDemand $exportOnDemand
-     * @throws ConnectionSettingsException
      * @throws GetresponseApiException
+     * @throws ApiException
      */
     public function export(Subscriber $subscriber, ExportOnDemand $exportOnDemand)
     {

@@ -1,68 +1,72 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Block;
 
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiClientFactory;
+use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettings;
+use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettingsFactory;
+use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
+use GetResponse\GetResponseIntegration\Logger\Logger;
 use GrShareCode\ContactList\ContactListCollection;
 use GrShareCode\ContactList\ContactListService;
-use GrShareCode\GetresponseApiException;
-use Magento\Framework\View\Element\Template;
-use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 
 /**
  * Class Newsletter
  * @package GetResponse\GetResponseIntegration\Block
  */
-class Newsletter extends Template
+class Newsletter extends GetResponse
 {
     /** @var Repository */
     private $repository;
 
-    /** @var GetresponseApiClientFactory */
-    private $apiClientFactory;
-
-    /** @var Getresponse */
-    private $getResponseBlock;
-
     /**
      * @param Context $context
+     * @param ManagerInterface $messageManager
+     * @param RedirectFactory $redirectFactory
+     * @param ApiClientFactory $apiClientFactory
+     * @param Logger $logger
      * @param Repository $repository
-     * @param GetresponseApiClientFactory $apiClientFactory
-     * @param Getresponse $getResponseBlock
      */
     public function __construct(
         Context $context,
-        Repository $repository,
-        GetresponseApiClientFactory $apiClientFactory,
-        Getresponse $getResponseBlock
+        ManagerInterface $messageManager,
+        RedirectFactory $redirectFactory,
+        ApiClientFactory $apiClientFactory,
+        Logger $logger,
+        Repository $repository
     ) {
-        parent::__construct($context);
+        parent::__construct(
+            $context,
+            $messageManager,
+            $redirectFactory,
+            $apiClientFactory,
+            $logger
+        );
         $this->repository = $repository;
-        $this->apiClientFactory = $apiClientFactory;
-        $this->getResponseBlock = $getResponseBlock;
     }
 
     /**
-     * @return ContactListCollection
-     * @throws RepositoryException
-     * @throws GetresponseApiException
+     * @return ContactListCollection|Redirect
      */
     public function getLists()
     {
-        return (new ContactListService($this->apiClientFactory->createGetResponseApiClient()))->getAllContactLists();
+        try {
+            return (new ContactListService($this->getApiClientFactory()->createGetResponseApiClient()))->getAllContactLists();
+        } catch (\Exception $e) {
+            return $this->handleException($e);
+        }
     }
 
     /**
-     * @return array
+     * @return NewsletterSettings
      */
-    public function getAutoRespondersForFrontend()
-    {
-        return $this->getResponseBlock->getAutoRespondersForFrontend();
-    }
-
     public function getNewsletterSettings()
     {
-        return $this->getResponseBlock->getNewsletterSettings();
+        return NewsletterSettingsFactory::createFromArray(
+            $this->repository->getNewsletterSettings()
+        );
     }
 }

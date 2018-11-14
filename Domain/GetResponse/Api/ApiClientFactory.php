@@ -1,8 +1,6 @@
 <?php
-namespace GetResponse\GetResponseIntegration\Domain\GetResponse;
+namespace GetResponse\GetResponseIntegration\Domain\GetResponse\Api;
 
-use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiTypeFactory;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\Config;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettings;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
@@ -13,14 +11,12 @@ use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Api\GetresponseApi;
 use GrShareCode\Api\GetresponseApiClient;
 use GrShareCode\Api\UserAgentHeader;
-use Magento\Framework\App\CacheInterface;
-use Magento\Framework\ObjectManagerInterface;
 
 /**
- * Class GetresponseApiClientFactory
- * @package ShareCode
+ * Class ApiClientFactory
+ * @package GetResponse\GetResponseIntegration\Domain\GetResponse\Api
  */
-class GetresponseApiClientFactory
+class ApiClientFactory
 {
     /** @var MagentoRepository */
     private $repository;
@@ -28,33 +24,21 @@ class GetresponseApiClientFactory
     /** @var ShareCodeRepository */
     private $sharedCodeRepository;
 
-    /** @var ObjectManagerInterface */
-    private $objectManager;
-
-    /** @var CacheInterface */
-    private $cache;
-
     /**
-     * @param ObjectManagerInterface $objectManager
      * @param MagentoRepository $repository
      * @param ShareCodeRepository $sharedCodeRepository
-     * @param CacheInterface $cache
      */
     public function __construct(
-        ObjectManagerInterface $objectManager,
         MagentoRepository $repository,
-        ShareCodeRepository $sharedCodeRepository,
-        CacheInterface $cache
+        ShareCodeRepository $sharedCodeRepository
     ) {
-        $this->objectManager = $objectManager;
         $this->repository = $repository;
         $this->sharedCodeRepository = $sharedCodeRepository;
-        $this->cache = $cache;
     }
 
     /**
      * @return GetresponseApiClient
-     * @throws RepositoryException
+     * @throws ApiException
      */
     public function createGetResponseApiClient()
     {
@@ -69,9 +53,9 @@ class GetresponseApiClientFactory
                 $settings->getDomain()
             );
         } catch (ConnectionSettingsException $e) {
-            throw RepositoryException::buildForInvalidApiKey();
+            throw ApiException::buildForInvalidApiKey();
         } catch (ApiTypeException $e) {
-            throw RepositoryException::buildForInvalidApiKey();
+            throw ApiException::buildForInvalidApiKey();
         }
     }
 
@@ -106,12 +90,12 @@ class GetresponseApiClientFactory
      * @param ConnectionSettings $settings
      * @return GetresponseApiClient
      * @throws ApiTypeException
-     * @throws RepositoryException
+     * @throws ApiException
      */
     public function createApiClientFromConnectionSettings(ConnectionSettings $settings)
     {
         if (empty($settings->getApiKey())) {
-            throw RepositoryException::buildForInvalidApiKey();
+            throw ApiException::buildForInvalidApiKey();
         }
 
         return $this->createFromParams(

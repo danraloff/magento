@@ -1,25 +1,22 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Controller\Adminhtml\Account;
 
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiClientFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingService;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
+use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
+use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Domain\Magento\WebEventTrackingSettingsFactory;
+use GetResponse\GetResponseIntegration\Helper\Config;
 use GetResponse\GetResponseIntegration\Helper\Message;
 use GrShareCode\Account\AccountService;
-use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\TrackingCode\TrackingCodeService;
 use Magento\Backend\App\Action;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryFactory;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\DefaultCustomFieldsFactory;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsFactory;
-use GetResponse\GetResponseIntegration\Helper\Config;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Request\Http;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\View\Result\Page;
-use Magento\Framework\App\Request\Http;
-use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 
 /**
  * Class Save
@@ -38,7 +35,7 @@ class Save extends Action
     /** @var Repository */
     private $repository;
 
-    /** @var GetresponseApiClientFactory */
+    /** @var ApiClientFactory */
     private $apiClientFactory;
 
     /** @var CustomFieldsMappingService */
@@ -46,13 +43,13 @@ class Save extends Action
 
     /**
      * @param Context $context
-     * @param GetresponseApiClientFactory $apiClientFactory
+     * @param ApiClientFactory $apiClientFactory
      * @param Repository $repository
      * @param CustomFieldsMappingService $customFieldsMappingService
      */
     public function __construct(
         Context $context,
-        GetresponseApiClientFactory $apiClientFactory,
+        ApiClientFactory $apiClientFactory,
         Repository $repository,
         CustomFieldsMappingService $customFieldsMappingService
     ) {
@@ -107,10 +104,7 @@ class Save extends Action
         } catch (GetresponseApiException $e) {
             $this->messageManager->addErrorMessage(self::API_ERROR_MESSAGE);
             return $this->_redirect(Config::PLUGIN_MAIN_PAGE);
-        } catch (RepositoryException $e) {
-            $this->messageManager->addErrorMessage(self::API_ERROR_MESSAGE);
-            return $this->_redirect(Config::PLUGIN_MAIN_PAGE);
-        } catch (ApiTypeException $e) {
+        } catch (ApiException $e) {
             $this->messageManager->addErrorMessage(self::API_ERROR_MESSAGE);
             return $this->_redirect(Config::PLUGIN_MAIN_PAGE);
         }

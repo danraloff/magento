@@ -2,17 +2,14 @@
 
 namespace GetResponse\GetResponseIntegration\Controller\Adminhtml\Export;
 
-use Exception;
 use GetResponse\GetResponseIntegration\Controller\Adminhtml\AbstractController;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\ExportOnDemand\Dto\ExportOnDemandDto;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\ExportOnDemand\ExportOnDemand;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\ExportOnDemand\ExportOnDemandService;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\ExportOnDemand\ExportOnDemandValidator;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryValidator;
-use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Helper\Message;
-use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Api\Exception\GetresponseApiException;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Request\Http;
@@ -46,7 +43,6 @@ class Process extends AbstractController
      * @param Context $context
      * @param PageFactory $resultPageFactory
      * @param Repository $repository
-     * @param RepositoryValidator $repositoryValidator
      * @param ExportOnDemandValidator $exportOnDemandValidator
      * @param ExportOnDemandService $exportOnDemandService
      */
@@ -54,11 +50,10 @@ class Process extends AbstractController
         Context $context,
         PageFactory $resultPageFactory,
         Repository $repository,
-        RepositoryValidator $repositoryValidator,
         ExportOnDemandValidator $exportOnDemandValidator,
         ExportOnDemandService $exportOnDemandService
     ) {
-        parent::__construct($context, $repositoryValidator);
+        parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
         $this->repository = $repository;
         $this->exportOnDemandValidator = $exportOnDemandValidator;
@@ -87,35 +82,16 @@ class Process extends AbstractController
         $subscribers = $this->repository->getFullCustomersDetails();
         $exportOnDemand = ExportOnDemand::createFromDto($exportOnDemandDto);
 
-        try {
-            /** @var Subscriber $subscriber */
-            foreach ($subscribers as $subscriber) {
-                try {
-                    $this->exportOnDemandService->export($subscriber, $exportOnDemand);
-                } catch (GetresponseApiException $e) {
-                }
+        /** @var Subscriber $subscriber */
+        foreach ($subscribers as $subscriber) {
+            try {
+                $this->exportOnDemandService->export($subscriber, $exportOnDemand);
+            } catch (GetresponseApiException $e) {
+            } catch (ApiException $e) {
             }
-
-        } catch (ConnectionSettingsException $e) {
-            return $this->handleException($e);
-        } catch (ApiTypeException $e) {
-            return $this->handleException($e);
         }
 
         $this->messageManager->addSuccessMessage(Message::DATA_EXPORTED);
-        $resultPage = $this->resultPageFactory->create();
-        $resultPage->getConfig()->getTitle()->prepend(self::PAGE_TITLE);
-
-        return $resultPage;
-    }
-
-    /**
-     * @param Exception $exception
-     * @return Page
-     */
-    private function handleException(Exception $exception)
-    {
-        $this->messageManager->addErrorMessage($exception->getMessage());
         $resultPage = $this->resultPageFactory->create();
         $resultPage->getConfig()->getTitle()->prepend(self::PAGE_TITLE);
 

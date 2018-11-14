@@ -12,7 +12,6 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\Store;
 
-
 /**
  * Class ShareCodeRepository
  * @package GetResponse\GetResponseIntegration\Domain\Magento

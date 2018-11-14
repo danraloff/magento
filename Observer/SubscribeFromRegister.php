@@ -1,13 +1,11 @@
 <?php
-
 namespace GetResponse\GetResponseIntegration\Observer;
 
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactCustomFields;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactService;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistrationService;
-use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Api\Exception\GetresponseApiException;
 use Magento\Customer\Model\Customer;
 use Magento\Framework\Event\Observer;
@@ -92,9 +90,8 @@ class SubscribeFromRegister implements ObserverInterface
                     $contactCustomFieldsCollection,
                     $registrationSettings->isUpdateCustomFieldsEnalbed()
                 );
+            } catch (ApiException $e) {
             } catch (GetresponseApiException $e) {
-            } catch (ConnectionSettingsException $e) {
-            } catch (ApiTypeException $e) {
             }
         }
 

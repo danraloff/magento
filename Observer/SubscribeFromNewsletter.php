@@ -1,14 +1,11 @@
 <?php
-
 namespace GetResponse\GetResponseIntegration\Observer;
 
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactCustomFields;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Contact\ContactService;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
-use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\NewsletterSettingsFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Api\Exception\GetresponseApiException;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
@@ -89,10 +86,8 @@ class SubscribeFromNewsletter implements ObserverInterface
                 $this->contactCustomFields->getForSubscriber(),
                 false
             );
-        } catch (RepositoryException $e) {
-        } catch (ApiTypeException $e) {
+        } catch (ApiException $e) {
         } catch (GetresponseApiException $e) {
-        } catch (ConnectionSettingsException $e) {
         }
     }
 }

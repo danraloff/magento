@@ -2,10 +2,9 @@
 
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse\Cart;
 
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Product\ProductFactory;
-use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
-use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Cart\Cart;
 use GrShareCode\Cart\Command\AddCartCommand;
@@ -73,9 +72,8 @@ class CartService
      * @param int $quoteId
      * @param string $contactListId
      * @param string $grShopId
-     * @throws ConnectionSettingsException
-     * @throws ApiTypeException
      * @throws GetresponseApiException
+     * @throws ApiException
      */
     public function sendCart($quoteId, $contactListId, $grShopId)
     {

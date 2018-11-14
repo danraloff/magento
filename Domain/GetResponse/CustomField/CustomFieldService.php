@@ -1,7 +1,7 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse\CustomField;
 
-use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiException;
 use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\CustomField\CustomFieldCollection;
 
@@ -24,8 +24,8 @@ class CustomFieldService
 
     /**
      * @return CustomFieldCollection
-     * @throws ConnectionSettingsException
      * @throws GetresponseApiException
+     * @throws ApiException
      */
     public function getCustomFields()
     {

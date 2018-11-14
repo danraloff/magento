@@ -2,21 +2,22 @@
 
 namespace GetResponse\GetResponseIntegration\Test\Unit\Block;
 
-use GetResponse\GetResponseIntegration\Block\Getresponse;
 use GetResponse\GetResponseIntegration\Block\Registration as RegistrationBlock;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomField\CustomFieldService;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMapping;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingCollection;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\CustomFieldsMapping\CustomFieldsMappingService;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\SubscribeViaRegistration\SubscribeViaRegistration;
 use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettings;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
+use GetResponse\GetResponseIntegration\Logger\Logger;
 use GetResponse\GetResponseIntegration\Test\BaseTestCase;
 use GrShareCode\Api\GetresponseApiClient;
+use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
-
 
 /**
  * Class RegistrationTest
@@ -30,7 +31,7 @@ class RegistrationTest extends BaseTestCase
     /** @var Repository|\PHPUnit_Framework_MockObject_MockObject */
     private $repository;
 
-    /** @var GetresponseApiClientFactory|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var \GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiClientFactory|\PHPUnit_Framework_MockObject_MockObject */
     private $apiClientFactory;
 
     /** @var RegistrationBlock registrationBlock */
@@ -48,22 +49,37 @@ class RegistrationTest extends BaseTestCase
     /** @var CustomFieldsMappingService|\PHPUnit_Framework_MockObject_MockObject */
     private $customFieldsMappingService;
 
+    /** @var  ManagerInterface|\PHPUnit_Framework_MockObject_MockObject*/
+    private $messageManager;
+
+    /** @var RedirectFactory|\PHPUnit_Framework_MockObject_MockObject*/
+    private $redirectFactory;
+
+    /** @var Logger|\PHPUnit_Framework_MockObject_MockObject */
+    private $logger;
+
     public function setUp()
     {
         $this->context = $this->getMockWithoutConstructing(Context::class);
         $this->repository = $this->getMockWithoutConstructing(Repository::class);
-        $this->apiClientFactory = $this->getMockWithoutConstructing(GetresponseApiClientFactory::class);
+        $this->apiClientFactory = $this->getMockWithoutConstructing(ApiClientFactory::class);
         $this->objectManager = $this->getMockWithoutConstructing(ObjectManagerInterface::class);
         $this->grApiClient = $this->getMockWithoutConstructing(GetresponseApiClient::class);
-        $this->apiClientFactory->method('createGetResponseApiClient')->willReturn($this->grApiClient);
         $this->customFieldsService = $this->getMockWithoutConstructing(CustomFieldService::class);
         $this->customFieldsMappingService = $this->getMockWithoutConstructing(CustomFieldsMappingService::class);
+        $this->messageManager = $this->getMockWithoutConstructing(ManagerInterface::class);
+        $this->redirectFactory = $this->getMockWithoutConstructing(RedirectFactory::class);
+        $this->logger = $this->getMockWithoutConstructing(Logger::class);
 
-        $getresponseBlock = new Getresponse($this->repository, $this->apiClientFactory);
+        $this->apiClientFactory->method('createGetResponseApiClient')->willReturn($this->grApiClient);
+
         $this->registrationBlock = new RegistrationBlock(
             $this->context,
+            $this->messageManager,
+            $this->redirectFactory,
             $this->apiClientFactory,
-            $getresponseBlock,
+            $this->logger,
+            $this->repository,
             $this->customFieldsService,
             $this->customFieldsMappingService
         );

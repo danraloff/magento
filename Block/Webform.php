@@ -2,42 +2,52 @@
 
 namespace GetResponse\GetResponseIntegration\Block;
 
-use GetResponse\GetResponseIntegration\Domain\GetResponse\GetresponseApiClientFactory;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\RepositoryException;
+use Exception;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiClientFactory;
 use GetResponse\GetResponseIntegration\Domain\Magento\Repository;
 use GetResponse\GetResponseIntegration\Domain\Magento\WebformSettings;
 use GetResponse\GetResponseIntegration\Domain\Magento\WebformSettingsFactory;
-use GrShareCode\Api\Exception\GetresponseApiException;
+use GetResponse\GetResponseIntegration\Logger\Logger;
 use GrShareCode\WebForm\WebFormCollection;
 use GrShareCode\WebForm\WebFormService;
-use Magento\Framework\View\Element\Template;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\View\Element\Template\Context;
 
 /**
  * Class Webform
  * @package GetResponse\GetResponseIntegration\Block
  */
-class Webform extends Template
+class Webform extends GetResponse
 {
     /** @var Repository */
     private $repository;
 
-    /** @var GetresponseApiClientFactory */
-    private $apiClientFactory;
-
     /**
      * @param Context $context
+     * @param ManagerInterface $messageManager
+     * @param RedirectFactory $redirectFactory
+     * @param ApiClientFactory $apiClientFactory
+     * @param Logger $logger
      * @param Repository $repository
-     * @param GetresponseApiClientFactory $apiClientFactory
      */
     public function __construct(
         Context $context,
-        Repository $repository,
-        GetresponseApiClientFactory $apiClientFactory
+        ManagerInterface $messageManager,
+        RedirectFactory $redirectFactory,
+        ApiClientFactory $apiClientFactory,
+        Logger $logger,
+        Repository $repository
     ) {
-        parent::__construct($context);
+        parent::__construct(
+            $context,
+            $messageManager,
+            $redirectFactory,
+            $apiClientFactory,
+            $logger
+        );
         $this->repository = $repository;
-        $this->apiClientFactory = $apiClientFactory;
     }
 
     /**
@@ -51,12 +61,14 @@ class Webform extends Template
     }
 
     /**
-     * @return WebFormCollection
-     * @throws RepositoryException
-     * @throws GetresponseApiException
+     * @return WebFormCollection|Redirect
      */
     public function getWebForms()
     {
-        return (new WebFormService($this->apiClientFactory->createGetResponseApiClient()))->getAllWebForms();
+        try {
+            return (new WebFormService($this->getApiClientFactory()->createGetResponseApiClient()))->getAllWebForms();
+        } catch (Exception $e) {
+            return $this->handleException($e);
+        }
     }
 }

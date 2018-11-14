@@ -1,18 +1,20 @@
 <?php
-namespace GetResponse\GetResponseIntegration\Domain\GetResponse;
+namespace GetResponse\GetResponseIntegration\Domain\GetResponse\Api;
+
+use Exception;
 
 /**
- * Class GetResponseRepositoryException
- * @package GetResponse\GetResponseIntegration\Domain\GetResponse
+ * Class ApiException
+ * @package GetResponse\GetResponseIntegration\Domain\GetResponse\Api
  */
-class RepositoryException extends \Exception
+class ApiException extends Exception
 {
     const INVALID_API_KEY = '12001';
     const INVALID_RESPONSE_CODE = '12003';
     const CONNECTION_SETTINGS_NOT_FOUND = '12004';
 
     /**
-     * @return RepositoryException
+     * @return ApiException
      */
     public static function buildForInvalidApiKey()
     {

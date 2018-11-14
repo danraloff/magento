@@ -1,9 +1,8 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse\Order;
 
-use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
-use GrShareCode\Api\ApiTypeException;
-use GrShareCode\GetresponseApiException;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Order\Command\AddOrderCommand;
 use GrShareCode\Order\Command\EditOrderCommand;
 
@@ -19,15 +18,15 @@ class OrderService
     /**
      * @param OrderServiceFactory $orderServiceFactory
      */
-    public function __construct(OrderServiceFactory $orderServiceFactory) {
+    public function __construct(OrderServiceFactory $orderServiceFactory)
+    {
         $this->orderServiceFactory = $orderServiceFactory;
     }
 
     /**
      * @param AddOrderCommand $addOrderCommand
-     * @throws ApiTypeException
-     * @throws ConnectionSettingsException
      * @throws GetresponseApiException
+     * @throws ApiException
      */
     public function addOrder(AddOrderCommand $addOrderCommand)
     {
@@ -37,9 +36,8 @@ class OrderService
 
     /**
      * @param EditOrderCommand $editOrderCommand
-     * @throws ApiTypeException
-     * @throws ConnectionSettingsException
      * @throws GetresponseApiException
+     * @throws ApiException
      */
     public function updateOrder(EditOrderCommand $editOrderCommand)
     {

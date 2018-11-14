@@ -1,8 +1,7 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse\Contact;
 
-use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
-use GrShareCode\Api\Authorization\ApiTypeException;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiException;
 use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Contact\Command\AddContactCommand;
 use GrShareCode\Contact\Command\FindContactCommand;
@@ -31,7 +30,7 @@ class ContactService
      * @param string $contactListId
      * @return null|Contact
      * @throws GetresponseApiException
-     * @throws ConnectionSettingsException
+     * @throws ApiException
      */
     public function findContactByEmail($email, $contactListId)
     {
@@ -50,8 +49,8 @@ class ContactService
      * @param int|null $dayOfCycle
      * @param ContactCustomFieldsCollection $customs
      * @param bool $updateIfAlreadyExists
-     * @throws ConnectionSettingsException
      * @throws GetresponseApiException
+     * @throws ApiException
      */
     public function addContact(
         $email,

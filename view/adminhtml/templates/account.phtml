@@ -1,11 +1,13 @@
 <?php
+
 use GetResponse\GetResponseIntegration\Block\Account as AccountBlock;
-use GetResponse\GetResponseIntegration\Domain\GetResponse\Account;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Account\Account;
+
 /** @var $block AccountBlock */
 $isApiActive = $block->isConnectedToGetResponse();
 
 if ($isApiActive) {
-    /** @var Account $account */
+    /** @var \GetResponse\GetResponseIntegration\Domain\GetResponse\Account\Account $account */
     $account = $block->getAccountInfo();
 }
 ?>

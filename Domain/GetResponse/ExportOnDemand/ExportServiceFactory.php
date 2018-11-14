@@ -1,11 +1,10 @@
 <?php
 namespace GetResponse\GetResponseIntegration\Domain\GetResponse\ExportOnDemand;
 
-use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiClientFactory;
+use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiException;
 use GetResponse\GetResponseIntegration\Domain\GetResponse\Api\Config;
-use GetResponse\GetResponseIntegration\Domain\Magento\ConnectionSettingsException;
 use GetResponse\GetResponseIntegration\Domain\Magento\ShareCodeRepository;
-use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Export\ExportContactService;
 use GrShareCode\Export\ExportContactServiceFactory;
 
@@ -15,35 +14,40 @@ use GrShareCode\Export\ExportContactServiceFactory;
  */
 class ExportServiceFactory
 {
-    /** @var ApiFactory */
-    private $apiFactory;
-
     /** @var ShareCodeRepository */
     private $shareCodeRepository;
 
+    /** @var ApiClientFactory */
+    private $apiClientFactory;
+
+    /** @var ExportContactServiceFactory */
+    private $exportContactServiceFactory;
+
     /**
-     * @param ApiFactory $apiFactory
+     * @param ApiClientFactory $apiClientFactory
      * @param ShareCodeRepository $shareCodeRepository
+     * @param ExportContactServiceFactory $exportContactServiceFactory
      */
-    public function __construct(ApiFactory $apiFactory, ShareCodeRepository $shareCodeRepository)
-    {
-        $this->apiFactory = $apiFactory;
+    public function __construct(
+        ApiClientFactory $apiClientFactory,
+        ShareCodeRepository $shareCodeRepository,
+        ExportContactServiceFactory $exportContactServiceFactory
+    ) {
+        $this->apiClientFactory = $apiClientFactory;
         $this->shareCodeRepository = $shareCodeRepository;
+        $this->exportContactServiceFactory = $exportContactServiceFactory;
     }
 
     /**
      * @return ExportContactService
-     * @throws ConnectionSettingsException
-     * @throws ApiTypeException
+     * @throws ApiException
      */
     public function create()
     {
-        return ExportContactServiceFactory::create(
-            $this->apiFactory->create(),
+        return $this->exportContactServiceFactory->create(
+            $this->apiClientFactory->createGetResponseApiClient(),
             $this->shareCodeRepository,
             Config::ORIGIN_NAME
         );
     }
-
-
 }
