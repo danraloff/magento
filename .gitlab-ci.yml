@@ -13,7 +13,7 @@ composer install:php56:
   - php composer-setup.php
   - php -r "unlink('composer-setup.php');"
   script:
-  - php composer.phar config http-basic.repo.magento.com 0cda6f69951a956023e310d336c6c668 f75f66caf3a80070c61af646b5addabc
+  - php composer.phar config http-basic.repo.magento.com $MAGENTO_USER $MAGENTO_PASS
   - php composer.phar install --prefer-dist --no-progress --optimize-autoloader
   artifacts:
     paths:
@@ -33,7 +33,7 @@ composer install:php71:
   - php composer-setup.php
   - php -r "unlink('composer-setup.php');"
   script:
-  - php composer.phar config http-basic.repo.magento.com 0cda6f69951a956023e310d336c6c668 f75f66caf3a80070c61af646b5addabc
+  - php composer.phar config http-basic.repo.magento.com $MAGENTO_USER $MAGENTO_PASS
   - php composer.phar install --prefer-dist --no-progress --optimize-autoloader
   artifacts:
     paths:
