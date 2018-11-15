@@ -6,8 +6,8 @@ composer_install:php71:
   image: grintegrations/magento2_php71_gitlab
   stage: install_dependencies
   script:
-  - php composer.phar config -a -g http-basic.repo.magento.com $COMPOSER_REPO_MAGENTO_USERNAME $COMPOSER_REPO_MAGENTO_PASSWORD
-  - php composer.phar install --prefer-dist --no-progress --optimize-autoloader
+  - composer config -a -g http-basic.repo.magento.com $COMPOSER_REPO_MAGENTO_USERNAME $COMPOSER_REPO_MAGENTO_PASSWORD
+  - composer install --prefer-dist --no-progress --optimize-autoloader
   artifacts:
     paths:
     - vendor/
