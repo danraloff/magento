@@ -2,15 +2,9 @@ stages:
 - install_dependencies
 - test
 
-composer install:php56:
-  image: php:5.6-cli
+composer_install:php71:
+  image: grintegrations/magento2_php71_gitlab
   stage: install_dependencies
-  before_script:
-  - apt-get update
-  - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-  - php -r "if (hash_file('SHA384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-  - php composer-setup.php
-  - php -r "unlink('composer-setup.php');"
   script:
   - php composer.phar config -a -g http-basic.repo.magento.com $COMPOSER_REPO_MAGENTO_USERNAME $COMPOSER_REPO_MAGENTO_PASSWORD
   - php composer.phar install --prefer-dist --no-progress --optimize-autoloader
@@ -20,41 +14,9 @@ composer install:php56:
     expire_in: 2 hrs
   except:
   - develop
-
-composer install:php71:
-  image: php:7.1-cli
-  stage: install_dependencies
-  before_script:
-  - apt-get update
-  - apt-get install -y git
-  - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-  - php -r "if (hash_file('SHA384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-  - php composer-setup.php
-  - php -r "unlink('composer-setup.php');"
-  script:
-  - php composer.phar config -a -g http-basic.repo.magento.com $COMPOSER_REPO_MAGENTO_USERNAME $COMPOSER_REPO_MAGENTO_PASSWORD
-  - php composer.phar install --prefer-dist --no-progress --optimize-autoloader
-  artifacts:
-    paths:
-    - vendor/
-    expire_in: 2 hrs
-  except:
-  - develop
-
-test:app-php56:
-  image: php:5.6-cli
-  stage: test
-  tags:
-  - kubernetes-ci
-  script:
-  - ./vendor/bin/phpunit --testsuite unit --configuration ./Test/phpunit.xml --colors=never
-  except:
-  - develop
-  dependencies:
-  - composer install:php56
 
 test:app-php71:
-  image: php:7.1-cli
+  image: bstepien/magento_test
   stage: test
   tags:
   - kubernetes-ci
@@ -63,4 +25,4 @@ test:app-php71:
   except:
   - develop
   dependencies:
-  - composer install:php71
+  - composer_install:php71

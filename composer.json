@@ -5,12 +5,12 @@
     "license": "OSL-3.0",
     "minimum-stability": "dev",
     "type": "magento2-module",
-    "repositories": [
-        {
+    "repositories": {
+        "magento-repository": {
             "type": "composer",
             "url": "https://repo.magento.com/"
         }
-    ],
+    },
     "require": {
         "getresponse/share-code-plugin": "dev-6.0.0-rc"
     },
