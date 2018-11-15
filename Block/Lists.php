@@ -59,7 +59,6 @@ class Lists extends GetResponse
         } catch (Exception $e) {
             return $this->handleException($e);
         }
-
     }
 
     /**
@@ -76,7 +75,6 @@ class Lists extends GetResponse
         } catch (Exception $e) {
             return $this->handleException($e);
         }
-
     }
 
     /**
@@ -93,7 +91,6 @@ class Lists extends GetResponse
         } catch (Exception $e) {
             return $this->handleException($e);
         }
-
     }
 
     /**
