@@ -8,6 +8,9 @@ composer_install:php56:
   script:
   - composer config -a -g http-basic.repo.magento.com $COMPOSER_REPO_MAGENTO_USERNAME $COMPOSER_REPO_MAGENTO_PASSWORD
   - composer install --prefer-dist --no-progress --optimize-autoloader
+  artifacts:
+    paths:
+    - vendor/
   except:
   - develop
 
@@ -29,6 +32,9 @@ composer_install:php71:
   script:
   - composer config -a -g http-basic.repo.magento.com $COMPOSER_REPO_MAGENTO_USERNAME $COMPOSER_REPO_MAGENTO_PASSWORD
   - composer install --prefer-dist --no-progress --optimize-autoloader
+  artifacts:
+    paths:
+    - vendor/
   except:
   - develop
 
