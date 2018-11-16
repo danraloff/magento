@@ -17,8 +17,6 @@ test:app-php56:
   tags:
   - kubernetes-ci
   script:
-  - composer config -a -g http-basic.repo.magento.com 0cda6f69951a956023e310d336c6c668 f75f66caf3a80070c61af646b5addabc
-  - composer install --prefer-dist --no-progress --optimize-autoloader
   - ./vendor/bin/phpunit --testsuite unit --configuration ./Test/phpunit.xml --colors=never
   except:
   - develop
@@ -40,8 +38,6 @@ test:app-php71:
   tags:
   - kubernetes-ci
   script:
-  - composer config -a -g http-basic.repo.magento.com 0cda6f69951a956023e310d336c6c668 f75f66caf3a80070c61af646b5addabc
-  - composer install --prefer-dist --no-progress --optimize-autoloader
   - ./vendor/bin/phpunit --testsuite unit --configuration ./Test/phpunit.xml --colors=never
   except:
   - develop
