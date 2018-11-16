@@ -11,6 +11,7 @@ composer_install:php56:
   artifacts:
     paths:
     - vendor/
+    expire_in: 2 hrs
   except:
   - develop
 
@@ -35,6 +36,7 @@ composer_install:php71:
   artifacts:
     paths:
     - vendor/
+    expire_in: 2 hrs
   except:
   - develop
 
