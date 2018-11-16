@@ -16,7 +16,7 @@ composer_install:php56:
   - develop
 
 test:app-php56:
-  image: bstepien/magento_test
+  image: grintegrations/magento2_php56_gitlab_runner_image
   stage: test
   tags:
   - kubernetes-ci
@@ -41,7 +41,7 @@ composer_install:php71:
   - develop
 
 test:app-php71:
-  image: bstepien/magento_test
+  image: grintegrations/magento2_php71_gitlab_runner_image
   stage: test
   tags:
   - kubernetes-ci
