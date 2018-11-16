@@ -17,11 +17,9 @@
             <directory>Unit</directory>
         </testsuite>
     </testsuites>
-
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true" addUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">../../magento2</directory>
         </whitelist>
     </filter>
-
 </phpunit>
