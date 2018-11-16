@@ -43,7 +43,7 @@ class ExportOnDemandValidator
             return false;
         }
 
-        if ($exportOnDemandDto->isEcommerceEnabled() && null === $exportOnDemandDto->getStoreId()) {
+        if ($exportOnDemandDto->isEcommerceEnabled() && null === $exportOnDemandDto->getShopId()) {
             $this->errorMessage = Message::STORE_CHOOSE;
 
             return false;

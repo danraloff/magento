@@ -21,7 +21,7 @@ class ExportOnDemandDto
     private $ecommerceEnabled;
 
     /** @var null|string */
-    private $storeId;
+    private $shopId;
 
     /** @var bool */
     private $updateContactCustomFieldEnabled;
@@ -34,7 +34,7 @@ class ExportOnDemandDto
      * @param bool $autoresponderEnabled
      * @param int|null $dayOfCycle
      * @param bool $ecommerceEnabled
-     * @param string|null $storeId
+     * @param string|null $shopId
      * @param bool $updateContactCustomFieldEnabled
      * @param CustomFieldMappingDtoCollection $customFieldMappingDtoCollection
      */
@@ -43,7 +43,7 @@ class ExportOnDemandDto
         $autoresponderEnabled,
         $dayOfCycle,
         $ecommerceEnabled,
-        $storeId,
+        $shopId,
         $updateContactCustomFieldEnabled,
         CustomFieldMappingDtoCollection $customFieldMappingDtoCollection
     ) {
@@ -51,7 +51,7 @@ class ExportOnDemandDto
         $this->autoresponderEnabled = $autoresponderEnabled;
         $this->dayOfCycle = $dayOfCycle;
         $this->ecommerceEnabled = $ecommerceEnabled;
-        $this->storeId = $storeId;
+        $this->shopId = $shopId;
         $this->updateContactCustomFieldEnabled = $updateContactCustomFieldEnabled;
         $this->customFieldMappingDtoCollection = $customFieldMappingDtoCollection;
     }
@@ -107,9 +107,9 @@ class ExportOnDemandDto
     /**
      * @return string|null
      */
-    public function getStoreId()
+    public function getShopId()
     {
-        return $this->storeId;
+        return $this->shopId;
     }
 
     /**

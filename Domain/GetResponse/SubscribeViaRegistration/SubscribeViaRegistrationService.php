@@ -37,14 +37,14 @@ class SubscribeViaRegistrationService
      */
     public function saveCustomFieldsMapping(CustomFieldsMappingCollection $customFieldsMappingCollection)
     {
-        $customFieldMappingCollection = CustomFieldsMappingCollection::createDefaults();
+        $finalCustomFieldMappingCollection = CustomFieldsMappingCollection::createDefaults();
 
         /** @var CustomFieldsMapping $customFieldMapping */
         foreach ($customFieldsMappingCollection as $customFieldMapping) {
-            $customFieldMappingCollection->add($customFieldMapping);
+            $finalCustomFieldMappingCollection->add($customFieldMapping);
         }
 
-        $this->repository->updateCustoms($customFieldMappingCollection);
+        $this->repository->updateCustoms($finalCustomFieldMappingCollection);
     }
 
     /**

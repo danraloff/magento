@@ -60,9 +60,9 @@ class ApiClientFactory
     }
 
     /**
-     * @param $apiKey
-     * @param $apiType
-     * @param $domain
+     * @param string $apiKey
+     * @param string $apiType
+     * @param string $domain
      * @return GetresponseApiClient
      * @throws ApiTypeException
      */

@@ -48,7 +48,7 @@ class ExportOnDemand
         return new self(
             $exportOnDemandDto->getContactListId(),
             $exportOnDemandDto->getDayOfCycle(),
-            $exportOnDemandDto->getStoreId(),
+            $exportOnDemandDto->getShopId(),
             CustomFieldsMappingCollection::createFromDto($exportOnDemandDto->getCustomFieldMappingDtoCollection())
         );
     }

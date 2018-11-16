@@ -16,6 +16,12 @@ class CustomFieldServiceTest extends BaseTestCase
     /** @var CustomFieldService */
     private $sut;
 
+    protected function setUp()
+    {
+        $this->customFieldServiceFactory = $this->getMockWithoutConstructing(CustomFieldServiceFactory::class);
+        $this->sut = new CustomFieldService($this->customFieldServiceFactory);
+    }
+
     /**
      * @test
      */
@@ -32,11 +38,5 @@ class CustomFieldServiceTest extends BaseTestCase
             ->willReturn($grCustomFieldsService);
 
         $this->sut->getCustomFields();
-    }
-
-    protected function setUp()
-    {
-        $this->customFieldServiceFactory = $this->getMockWithoutConstructing(CustomFieldServiceFactory::class);
-        $this->sut = new CustomFieldService($this->customFieldServiceFactory);
     }
 }

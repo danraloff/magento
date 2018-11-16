@@ -29,7 +29,7 @@ class ExportTest extends BaseTestCase
     /** @var Repository|\PHPUnit_Framework_MockObject_MockObject */
     private $repository;
 
-    /** @var \GetResponse\GetResponseIntegration\Domain\GetResponse\Api\ApiClientFactory|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var ApiClientFactory|\PHPUnit_Framework_MockObject_MockObject */
     private $apiClientFactory;
 
     /** @var ExportBlock */
