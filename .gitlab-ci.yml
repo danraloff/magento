@@ -3,7 +3,7 @@ stages:
 - test
 
 composer_install:php56:
-  image: grintegrations/magento2_php56_gitlab_runner_image
+  image: grintegrations/php56_cli
   stage: install_dependencies
   script:
   - composer config -a -g http-basic.repo.magento.com $COMPOSER_REPO_MAGENTO_USERNAME $COMPOSER_REPO_MAGENTO_PASSWORD
@@ -28,7 +28,7 @@ test:app-php56:
   - composer_install:php56
 
 composer_install:php71:
-  image: grintegrations/magento2_php71_gitlab_runner_image
+  image: grintegrations/php71_cli
   stage: install_dependencies
   script:
   - composer config -a -g http-basic.repo.magento.com $COMPOSER_REPO_MAGENTO_USERNAME $COMPOSER_REPO_MAGENTO_PASSWORD
