@@ -1,9 +1,9 @@
 {
     "name": "getresponse/magento2",
     "description": "GetResponse Integration for Magento2",
-    "version": "20.3.4",
+    "version": "20.3.5",
     "license": "OSL-3.0",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "type": "magento2-module",
     "repositories": {
         "magento-repository": {
@@ -12,7 +12,7 @@
         }
     },
     "require": {
-        "getresponse/share-code-plugin": "dev-6.0.0-rc"
+        "getresponse/share-code-plugin": "^6.0.*"
     },
     "require-dev": {
         "phpunit/phpunit": "^5",
